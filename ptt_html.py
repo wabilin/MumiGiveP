@@ -15,14 +15,6 @@ def r18cookie(res):
     return res
 
 
-res = requests.session()
-res = r18cookie(res)
-#url = 'https://www.ptt.cc/bbs/Marginalman/M.1488452156.A.805.html'
-url = 'https://www.ptt.cc/bbs/Gossiping/M.1488458429.A.695.html'
-ptt_content = res.get(url)
-# print ptt_content.text
-
-
 class MyHTMLParser(HTMLParser):
     def __init__(self, recorder):
         HTMLParser.__init__(self)
@@ -82,7 +74,14 @@ class Recorder(object):
         for p in self.push_list:
             print str(p['push']) + ' : ' + p['id']
 
-r = Recorder()
-parser = MyHTMLParser(r)
-parser.feed(ptt_content.text)
-r.printout()
+
+def push_list_from_url(url):
+    res = requests.session()
+    res = r18cookie(res)
+    ptt_content = res.get(url)
+
+    r = Recorder()
+    parser = MyHTMLParser(r)
+    parser.feed(ptt_content.text)
+
+    return r.push_list

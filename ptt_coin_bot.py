@@ -102,33 +102,29 @@ def timeout_exit():
     exit()
 
 
-def main():
+def auto_give_money(money, mumi_list):
     user = get_account()
     tn = telnetlib.Telnet(HOST)
 
-    ptt = PttIo(tn, user, 5)
+    ptt = PttIo(tn, user, 10)
 
     ptt.login()
 
-    ptt.optional_acts([["請按任意鍵繼續", ""],
-                       ["刪除其他", "y"]])
+    print 'Login...'
 
-    ptt.optional_acts([["錯誤嘗試的記錄", "y"]])
+    ptt.expect_action("主功能表", 'p',
+                      opt_acts=[["請按任意鍵繼續", ''],
+                                ["刪除其他", 'y'],
+                                ["錯誤嘗試的記錄", "y"]])
 
-    print '....'
-
-    ptt.expect_action("主功能表", 'p')
     ptt.expect_action("網路遊樂場", 'p')
 
-    ptt.give_money('lintsu', '10')
-    ptt.give_money('lintsu', '10')
+    for m in mumi_list:
+        ptt.give_money(m, str(money))
+        print "Give money to [" + m + "] succeed."
 
-    while True:
-        sleep(1)
-        buf = tn.read_very_eager()
-        msg = ptt_to_utf8(buf)
-        print msg
-
-
-if __name__ == '__main__':
-    main()
+    # ending screen
+    sleep(2)
+    buf = tn.read_very_eager()
+    msg = ptt_to_utf8(buf)
+    print msg

@@ -22,54 +22,70 @@ def ptt_to_utf8(ptt_msg):
     return ptt_msg.decode('uao_decode').encode('utf8')
 
 
-class PttCoinBot:
-    def __init__(self, tn, user):
+class PttIo:
+    def __init__(self, tn, user, time_limit):
         self.tn = tn
         self.account = user['id']
         self.password = user['password']
+        self.time_limit = time_limit
+        self.buffer = ''
 
+    def clear_buffer(self):
+        self.buffer = ''
 
-def expect_msg(telnet, expected, time_limit):
-    buf, msg = '', ''
-    step = 1
+    def expect_action(self, expected, res):
+        msg, buf, telnet = '', self.buffer, self.tn
+        step = 1
 
-    for _ in xrange(0, time_limit, step):
-        sleep(step)
-        buf += telnet.read_very_eager()
-        msg = ptt_to_utf8(buf)
-        if expected in msg:
-            print msg
-            return True
+        for _ in xrange(0, self.time_limit, step):
+            sleep(step)
+            buf += telnet.read_very_eager()
+            msg = ptt_to_utf8(buf)
 
-    print msg
-    return False
-
-
-def expect_msgs(telnet, expected, time_limit):
-    buf, msg = '', ''
-    step = 1
-
-    for _ in xrange(0, time_limit, step):
-        sleep(step)
-        buf += telnet.read_very_eager()
-        msg = ptt_to_utf8(buf)
-        for i, v in enumerate(expected):
-            if v in msg:
+            if expected in msg:
                 print msg
-                return i + 1
+                enter_msg(self.tn, res)
 
-    print msg
-    return False
+                self.clear_buffer()
+                return
+
+        print msg
+        timeout_exit()
+
+    def optional_expect(self, expected_acts):
+        buf, telnet = self.buffer, self.tn
+        step = 1
+
+        for _ in xrange(0, self.time_limit, step):
+            sleep(step)
+            buf += telnet.read_very_eager()
+            msg = ptt_to_utf8(buf)
+
+            matched = [x for x in expected_acts if x[0] in msg]
+            if matched:
+                print msg
+                enter_msg(self.tn, matched[0][1])
+                self.clear_buffer()
+                return
+
+        self.buffer = buf
+
+    def login(self):
+        self.expect_action("註冊", self.account)
+        self.expect_action("請輸入您的密碼", self.password)
+
+    def give_money(self, name, money):
+        # Assert in ptt store page
+        self.expect_action("給其他人Ptt幣", '0')
+        self.expect_action("這位幸運兒的id", name)
+        self.expect_action("請輸入金額", money)
+        self.optional_expect([["請輸入您的密碼", self.password]])
+        self.expect_action("要修改紅包袋嗎", 'n')
+        self.expect_action("按任意鍵繼續", '')
 
 
 def enter_msg(tn, msg):
     tn.write(msg + "\r\n")
-
-
-def check_then_enter(result, tn, msg):
-    if not result:
-        timeout_exit()
-    enter_msg(tn, msg)
 
 
 def timeout_exit():
@@ -77,40 +93,25 @@ def timeout_exit():
     exit()
 
 
-def optional_step():
-    pass
-
-
-
-
 def main():
     user = get_account()
-    time_limit = 5
-
     tn = telnetlib.Telnet(HOST)
 
-    # Enter ID
-    s = expect_msg(tn, "註冊", time_limit)
-    check_then_enter(s, tn, user['id'])
+    ptt = PttIo(tn, user, 5)
 
-    # Enter password
-    s = expect_msg(tn, "請輸入您的密碼", time_limit)
-    check_then_enter(s, tn, user['password'])
+    ptt.login()
 
-    s = expect_msgs(tn, ["請按任意鍵繼續", "刪除其他"], time_limit)
-    if s == 1:
-        enter_msg(tn, "")
-    elif s == 2:
-        enter_msg(tn, "y")
-    else:
-        timeout_exit()
+    ptt.optional_expect([["請按任意鍵繼續", ""],
+                         ["刪除其他", "y"]])
 
-    # main page to ptt store
-    s = expect_msg(tn, "lay", time_limit)
-    check_then_enter(s, tn, 'p')
+    ptt.optional_expect([["錯誤嘗試的記錄", "y"]])
 
-    s = expect_msg(tn, "tt量販店", time_limit)
-    check_then_enter(s, tn, 'p')
+    print '....'
+
+    ptt.expect_action("主功能表", 'p')
+    ptt.expect_action("網路遊樂場", 'p')
+
+    ptt.give_money('lintsu', '10')
 
     while True:
         sleep(1)

@@ -33,7 +33,7 @@ class PttIo:
     def clear_buffer(self):
         self.buffer = ''
 
-    def expect_action(self, expected, res):
+    def expect_action(self, expected, res, opt_acts=None):
         msg, buf, telnet = '', self.buffer, self.tn
         step = 1
 
@@ -49,10 +49,17 @@ class PttIo:
                 self.clear_buffer()
                 return
 
+            elif opt_acts:
+                matched = [x for x in opt_acts if x[0] in msg]
+                if matched:
+                    print msg
+                    enter_msg(self.tn, matched[0][1])
+                    buf = ''
+
         print msg
         timeout_exit()
 
-    def optional_expect(self, expected_acts):
+    def optional_acts(self, act_list):
         buf, telnet = self.buffer, self.tn
         step = 1
 
@@ -61,7 +68,7 @@ class PttIo:
             buf += telnet.read_very_eager()
             msg = ptt_to_utf8(buf)
 
-            matched = [x for x in expected_acts if x[0] in msg]
+            matched = [x for x in act_list if x[0] in msg]
             if matched:
                 print msg
                 enter_msg(self.tn, matched[0][1])
@@ -79,8 +86,10 @@ class PttIo:
         self.expect_action("給其他人Ptt幣", '0')
         self.expect_action("這位幸運兒的id", name)
         self.expect_action("請輸入金額", money)
-        self.optional_expect([["請輸入您的密碼", self.password]])
-        self.expect_action("要修改紅包袋嗎", 'n')
+        self.expect_action("要修改紅包袋嗎", 'n',
+                           opt_acts=[["請輸入您的密碼", self.password],
+                                     ["確定進行交易嗎", 'y']])
+
         self.expect_action("按任意鍵繼續", '')
 
 
@@ -101,16 +110,17 @@ def main():
 
     ptt.login()
 
-    ptt.optional_expect([["請按任意鍵繼續", ""],
-                         ["刪除其他", "y"]])
+    ptt.optional_acts([["請按任意鍵繼續", ""],
+                       ["刪除其他", "y"]])
 
-    ptt.optional_expect([["錯誤嘗試的記錄", "y"]])
+    ptt.optional_acts([["錯誤嘗試的記錄", "y"]])
 
     print '....'
 
     ptt.expect_action("主功能表", 'p')
     ptt.expect_action("網路遊樂場", 'p')
 
+    ptt.give_money('lintsu', '10')
     ptt.give_money('lintsu', '10')
 
     while True:

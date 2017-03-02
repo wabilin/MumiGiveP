@@ -4,10 +4,21 @@
 import requests
 
 from HTMLParser import HTMLParser
-from htmlentitydefs import name2codepoint
+
+
+def r18cookie(res):
+    payload = {
+        'from': '/bbs/gossiping/index.html',
+        'yes': 'yes'
+    }
+    res.post('https://www.ptt.cc/ask/over18', data=payload)
+    return res
+
 
 res = requests.session()
-url = 'https://www.ptt.cc/bbs/Marginalman/M.1488452156.A.805.html'
+res = r18cookie(res)
+#url = 'https://www.ptt.cc/bbs/Marginalman/M.1488452156.A.805.html'
+url = 'https://www.ptt.cc/bbs/Gossiping/M.1488458429.A.695.html'
 ptt_content = res.get(url)
 # print ptt_content.text
 
@@ -73,11 +84,5 @@ class Recorder(object):
 
 r = Recorder()
 parser = MyHTMLParser(r)
-
-msg = '<div class="push"><span class="f1 hl push-tag">→ </span>' \
-      '<span class="f3 hl push-userid">loserfeizie</span>' \
-      '<span class="f3 push-content">: 花丸的歐尼降</span>' \
-      '<span class="push-ipdatetime"> 03/02 18:58</span></div>'
-
 parser.feed(ptt_content.text)
 r.printout()

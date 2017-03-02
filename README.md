@@ -9,6 +9,5 @@ For crawling PTT website
 https://github.com/kennethreitz/requests
 
 # TODO
-1. R18 pages
-2. Kind of push
-3. Windows exe
+1. Kind of push
+1. Windows exe

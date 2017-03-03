@@ -7,6 +7,7 @@ import telnetlib
 import StringIO
 import uao_decode
 from time import sleep
+import os
 
 
 HOST = "ptt.cc"
@@ -122,3 +123,5 @@ def auto_give_money(money, mumi_list):
         show_user("OK!")
 
     show_user("All Done! Thanks for using MumiGiveP!")
+    if os.name == 'nt':
+        os.system('pause')

@@ -68,6 +68,9 @@ class PttIo:
         self.expect_action("請輸入您的密碼", self.password)
 
     def give_money(self, name, money):
+        if name.lower() == self.account.lower():
+            show_user("Can not give money to yourself.")
+
         # Assert in ptt store page
         self.expect_action("給其他人Ptt幣", '0')
         self.expect_action("這位幸運兒的id", name)

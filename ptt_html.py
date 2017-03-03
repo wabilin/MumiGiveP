@@ -22,7 +22,6 @@ class MyHTMLParser(HTMLParser):
         self.flags = {'push_tag': False, 'id_tag': False}
 
     def handle_starttag(self, tag, attrs):
-        print "Start tag:", tag
         attr_values = [attr[1] for attr in attrs]
         for v in attr_values:
             if 'push-tag' in v:

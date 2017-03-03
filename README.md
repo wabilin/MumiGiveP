@@ -24,3 +24,5 @@ https://github.com/kennethreitz/requests
 1. 稅前稅後
 1. 重複ID (目前只發不重複)
 1. 推文內容條件
+1. 跳著發
+1. 抽獎

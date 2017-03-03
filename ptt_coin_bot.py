@@ -35,10 +35,11 @@ class PttIo:
 
     def expect_action(self, expected, res, opt_acts=None):
         msg, buf, telnet = '', self.buffer, self.tn
-        step = 1
 
-        for _ in xrange(0, self.time_limit, step):
-            sleep(step)
+        waiting_time = 0.2
+        loop_times = self.time_limit * 5  # waiting time is 0.2 second
+        for _ in xrange(loop_times):
+            sleep(waiting_time)
             buf += telnet.read_very_eager()
             msg = ptt_to_utf8(buf)
 
@@ -58,24 +59,6 @@ class PttIo:
 
         print msg
         timeout_exit()
-
-    def optional_acts(self, act_list):
-        buf, telnet = self.buffer, self.tn
-        step = 1
-
-        for _ in xrange(0, self.time_limit, step):
-            sleep(step)
-            buf += telnet.read_very_eager()
-            msg = ptt_to_utf8(buf)
-
-            matched = [x for x in act_list if x[0] in msg]
-            if matched:
-                print msg
-                enter_msg(self.tn, matched[0][1])
-                self.clear_buffer()
-                return
-
-        self.buffer = buf
 
     def login(self):
         self.expect_action("註冊", self.account)

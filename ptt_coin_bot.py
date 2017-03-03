@@ -118,7 +118,7 @@ def auto_give_money(money, mumi_list):
     show_user('Entering PTT store...')
 
     for m in mumi_list:
-        show_user("Give money to: " + m + " ...")
+        show_user("Give {} money to {}: ...".format(money, m))
         ptt.give_money(m, str(money))
         show_user("OK!")
 

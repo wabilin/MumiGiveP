@@ -18,9 +18,7 @@ For crawling PTT website
 https://github.com/kennethreitz/requests
 
 ## TODO
-1. Windows 執行檔
 1. 選擇推噓文發錢
-1. 寫出 LOG 檔
 1. 稅前稅後
 1. 重複ID (目前只發不重複)
 1. 推文內容條件

@@ -4,6 +4,7 @@
 import getpass
 import sys
 import telnetlib
+import StringIO
 import uao_decode
 from time import sleep
 
@@ -12,8 +13,8 @@ HOST = "ptt.cc"
 
 
 def get_account():
-    uid = raw_input("Enter ur ptt id: ")
-    pw = getpass.getpass()
+    uid = raw_input("Enter your PTT id: ")
+    pw = getpass.getpass("Enter your PTT password:")
 
     return {'id': uid, 'password': pw}
 
@@ -29,6 +30,7 @@ class PttIo:
         self.password = user['password']
         self.time_limit = time_limit
         self.buffer = ''
+        self._log = StringIO.StringIO()
 
     def clear_buffer(self):
         self.buffer = ''
@@ -44,7 +46,7 @@ class PttIo:
             msg = ptt_to_utf8(buf)
 
             if expected in msg:
-                print msg
+                self.log(msg)
                 enter_msg(self.tn, res)
 
                 self.clear_buffer()
@@ -53,12 +55,12 @@ class PttIo:
             elif opt_acts:
                 matched = [x for x in opt_acts if x[0] in msg]
                 if matched:
-                    print msg
+                    self.log(msg)
                     enter_msg(self.tn, matched[0][1])
                     buf = ''
 
-        print msg
-        timeout_exit()
+        self.log(msg)
+        self.timeout_exit()
 
     def login(self):
         self.expect_action("註冊", self.account)
@@ -75,14 +77,24 @@ class PttIo:
 
         self.expect_action("按任意鍵繼續", '')
 
+    def log(self, msg):
+        print >>self._log, msg
+
+    def timeout_exit(self):
+        print "Can not get response in time."
+        log_file = open('log.txt', 'w')
+        log_file.write(self._log.getvalue())
+        self._log.close()
+        log_file.close()
+        exit()
+
 
 def enter_msg(tn, msg):
     tn.write(msg + "\r\n")
 
 
-def timeout_exit():
-    print "Can not get response in time."
-    exit()
+def show_user(msg):
+    print msg
 
 
 def auto_give_money(money, mumi_list):
@@ -93,7 +105,7 @@ def auto_give_money(money, mumi_list):
 
     ptt.login()
 
-    print 'Login...'
+    show_user('Login in to PTT...')
 
     ptt.expect_action("主功能表", 'p',
                       opt_acts=[["請按任意鍵繼續", ''],
@@ -102,12 +114,11 @@ def auto_give_money(money, mumi_list):
 
     ptt.expect_action("網路遊樂場", 'p')
 
-    for m in mumi_list:
-        ptt.give_money(m, str(money))
-        print "Give money to [" + m + "] succeed."
+    show_user('Entering PTT store...')
 
-    # ending screen
-    sleep(2)
-    buf = tn.read_very_eager()
-    msg = ptt_to_utf8(buf)
-    print msg
+    for m in mumi_list:
+        show_user("Give money to: " + m + " ...")
+        ptt.give_money(m, str(money))
+        show_user("OK!")
+
+    show_user("All Done! Thanks for using MumiGiveP!")

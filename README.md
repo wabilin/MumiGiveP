@@ -4,6 +4,28 @@
 A program auto give money on PTT,
 a BBS site in Taiwan.
 
+## Download and Installation
+### MacOS and Linux
+
+Download zip at [Github](https://github.com/wabilin/MumiGiveP)
+
+or
+
+```
+git clone git@github.com:wabilin/MumiGiveP.git
+```
+
+then run
+
+```
+python mumi.py
+```
+
+
+### Windows
+Download binary at
+
+Google Drive: [goo.gl/HOHaot](goo.gl/HOHaot)
 
 ## License
 GPLv3

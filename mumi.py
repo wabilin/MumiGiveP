@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from collections import OrderedDict
-from ptt_coin_bot import auto_give_money
+import getpass
+from ptt_agent import auto_give_money
 from ptt_html import push_list_from_url
+from push_filter import filter_push_list
 
 
 def ask_allowed_types():
@@ -55,31 +56,11 @@ def ask_for_setting(amount):
     return opt
 
 
-def filter_push_list(push_list, option):
-    allowed_types = option['allowed_types']
-    floor_limit = option['floor_limit']
-    step = option['step']
-    duplicate = option['duplicate']
-    amount = option['amount']
+def get_account():
+    uid = raw_input("Enter your PTT id: ")
+    pw = getpass.getpass("Enter your PTT password:")
 
-    if floor_limit:
-        push_list = push_list[:floor_limit]
-
-    # step
-    push_list = [v for i, v in enumerate(push_list) if (i+1) % step == 0]
-
-    # push type
-    push_list = [x for x in push_list if (x['push'] in allowed_types)]
-
-    id_list = [x['id'] for x in push_list]
-
-    if not duplicate:
-        id_list = list(OrderedDict.fromkeys(id_list))
-
-    if amount:
-        id_list = id_list[:amount]
-
-    return id_list
+    return {'id': uid, 'password': pw}
 
 
 def main():
@@ -100,7 +81,8 @@ def main():
 
     yes = raw_input("Aru you sure [y/N]: ")
     if yes == 'y' or yes == 'Y':
-        auto_give_money(money, lst)
+        user = get_account()
+        auto_give_money(money, lst, user)
 
 
 if __name__ == '__main__':

@@ -15,6 +15,12 @@ or
 git clone git@github.com:wabilin/MumiGiveP.git
 ```
 
+After that, run this script to install dependencies
+
+```
+pip install -r requirements.txt
+```
+
 then run
 
 ```

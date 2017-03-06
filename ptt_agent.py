@@ -107,7 +107,7 @@ def auto_give_money(money, mumi_list, user, printer=None):
     ptt.expect_action("主功能表", 'p',
                       opt_acts=[["請按任意鍵繼續", ''],
                                 ["刪除其他", 'y'],
-                                ["錯誤嘗試的記錄", "y"]])
+                                ["錯誤嘗試的記錄", 'n']])
 
     ptt.expect_action("網路遊樂場", 'p')
 

@@ -2,3 +2,7 @@
 *.pyc
 private_test.py
 log.txt
+.DS_Store
+build
+dist
+*.spec

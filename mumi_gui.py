@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from Tkinter import *
+import ScrolledText
 import tkMessageBox
 from ptt_agent import auto_give_money
 from ptt_html import push_list_from_url
@@ -13,6 +14,7 @@ class MumiGui:
         self.root = root
         root.minsize(width=600, height=400)
         self.entries = {}
+        self.lst = []
         self._setup_ui()
 
     def _setup_ui(self):
@@ -28,7 +30,7 @@ class MumiGui:
 
         self._create_give_push_options(6)
 
-        self.go_button = Button(root, text=u"發射姆咪", command=self.go_mu_mi)
+        self.go_button = Button(root, text=u"發射姆咪", command=self.gen_list)
         self.go_button.grid(row=7, column=3)
 
     def _create_url_field(self, row):
@@ -102,7 +104,7 @@ class MumiGui:
                                 onvalue=True, offvalue=False)
             check.grid(row=start_row, column=i)
 
-    def go_mu_mi(self):
+    def _get_options(self):
         allowed_push = [x for x in range(1, 4) if self.give_push[x].get()]
         step = to_int(self.entries['step'].get())
         duplicate = bool(self.entries['duplicate'].get())
@@ -116,22 +118,54 @@ class MumiGui:
             'amount': amount
         }
 
-        push_list = push_list_from_url(self.entries['url'].get())
+        return opt
 
+    def send_money(self):
+        user = {'id': self.entries['id'].get(),
+                'password': self.entries['password'].get()}
+        money = to_int(self.entries['money'].get())
+        if money:
+            auto_give_money(money, self.lst, user, printer=self.show)
+
+    def gen_list(self):
+        opt = self._get_options()
+        if not (opt['step'] and opt['amount']):
+            return
+
+        push_list = push_list_from_url(self.entries['url'].get())
         lst = filter_push_list(push_list, opt)
+        self.lst = lst
+
+        top = Toplevel()
+        top.minsize(400, 500)
+        top.title(u"姆咪名單")
+
+        list_area = ScrolledText.ScrolledText(
+            master=top,
+            wrap=WORD,
+            width=20,
+            height=10
+        )
 
         for name in lst:
-            self.show(name)
+            list_area.insert(END, "{}\n".format(name))
 
-        r = tkMessageBox.askquestion(u"要發錢囉", u"真的嗎?", icon='warning')
-        if r == 'yes':
-            user = {'id': self.entries['id'].get(),
-                    'password': self.entries['password'].get()}
+        Label(top, text=u"即將發送 P 幣給以下鄉民：").pack()
 
-            self.root.after(100,
-                            lambda: auto_give_money(to_int(self.entries['money'].get()),
-                                                    lst, user,
-                                                    printer=self.show))
+        list_area.configure(state="disabled")
+        list_area.pack()
+
+        app = self
+
+        def go():
+            top.destroy()
+            app.root.after(100, app.send_money)
+
+        go_button = Button(top, text=u"確定", command=go)
+        go_button.pack()
+
+        go_button = Button(top, text=u"取消", command=top.destroy)
+        go_button.pack()
 
     def show(self, msg):
         print msg

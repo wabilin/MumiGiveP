@@ -61,6 +61,7 @@ class PttIo:
     def give_money(self, name, money):
         if name.lower() == self.account.lower():
             self.printer("Can not give money to yourself.")
+            return
 
         # Assert in ptt store page
         self.expect_action("給其他人Ptt幣", '0')
@@ -120,5 +121,3 @@ def auto_give_money(money, mumi_list, user, printer=None):
     show_user("All Done! Thanks for using MumiGiveP!")
     if os.name == 'nt':
         os.system('pause')
-
-

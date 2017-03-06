@@ -1,23 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import getpass
-import sys
-import telnetlib
 import StringIO
-import uao_decode
-from time import sleep
 import os
-
+import telnetlib
+from time import sleep
+from lib import uao_decode
 
 HOST = "ptt.cc"
-
-
-def get_account():
-    uid = raw_input("Enter your PTT id: ")
-    pw = getpass.getpass("Enter your PTT password:")
-
-    return {'id': uid, 'password': pw}
 
 
 def ptt_to_utf8(ptt_msg):
@@ -25,13 +15,14 @@ def ptt_to_utf8(ptt_msg):
 
 
 class PttIo:
-    def __init__(self, tn, user, time_limit):
+    def __init__(self, tn, user, time_limit, printer):
         self.tn = tn
         self.account = user['id']
         self.password = user['password']
         self.time_limit = time_limit
         self.buffer = ''
         self._log = StringIO.StringIO()
+        self.printer = printer
 
     def clear_buffer(self):
         self.buffer = ''
@@ -69,7 +60,7 @@ class PttIo:
 
     def give_money(self, name, money):
         if name.lower() == self.account.lower():
-            show_user("Can not give money to yourself.")
+            self.printer("Can not give money to yourself.")
 
         # Assert in ptt store page
         self.expect_action("給其他人Ptt幣", '0')
@@ -97,15 +88,16 @@ def enter_msg(tn, msg):
     tn.write(msg + "\r\n")
 
 
-def show_user(msg):
-    print msg
+def auto_give_money(money, mumi_list, user, printer=None):
+    def show_user(msg):
+        if printer:
+            printer(msg)
+        else:
+            print msg
 
-
-def auto_give_money(money, mumi_list):
-    user = get_account()
     tn = telnetlib.Telnet(HOST)
 
-    ptt = PttIo(tn, user, 10)
+    ptt = PttIo(tn, user, 10, show_user)
 
     ptt.login()
 
@@ -128,3 +120,5 @@ def auto_give_money(money, mumi_list):
     show_user("All Done! Thanks for using MumiGiveP!")
     if os.name == 'nt':
         os.system('pause')
+
+

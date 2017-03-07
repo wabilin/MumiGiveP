@@ -27,7 +27,7 @@ class PttIo:
     def clear_buffer(self):
         self.buffer = ''
 
-    def expect_action(self, expected, res, opt_acts=None):
+    def expect_action(self, expected, res, opt_acts=None, newline=True):
         msg, buf, telnet = '', self.buffer, self.tn
 
         waiting_time = 0.2
@@ -39,7 +39,7 @@ class PttIo:
 
             if expected in msg:
                 self.log(msg)
-                enter_msg(self.tn, res)
+                enter_msg(self.tn, res, newline)
 
                 self.clear_buffer()
                 return
@@ -48,7 +48,7 @@ class PttIo:
                 matched = [x for x in opt_acts if x[0] in msg]
                 if matched:
                     self.log(msg)
-                    enter_msg(self.tn, matched[0][1])
+                    enter_msg(self.tn, matched[0][1], newline)
                     buf = ''
 
         self.log(msg)
@@ -76,6 +76,15 @@ class PttIo:
     def log(self, msg):
         print >>self._log, msg
 
+    def logout(self):
+        self.tn.write(b'\x1b[D')
+
+        self.expect_action("按任意鍵繼續", '',
+                           opt_acts=[["網路遊樂場", b'\x1b[D'],
+                                     ["主功能表", "G\r\n"],
+                                     ["您確定要離開", "y\r\n"]],
+                           newline=False)
+
     def timeout_exit(self):
         print "Can not get response in time."
         log_file = open('log.txt', 'w')
@@ -85,8 +94,11 @@ class PttIo:
         exit()
 
 
-def enter_msg(tn, msg):
-    tn.write(msg + "\r\n")
+def enter_msg(tn, msg, newline):
+    if newline:
+        tn.write(msg + "\r\n")
+    else:
+        tn.write(msg)
 
 
 def auto_give_money(money, mumi_list, user, printer=None):
@@ -117,6 +129,8 @@ def auto_give_money(money, mumi_list, user, printer=None):
         show_user("Give {} money to {}: ...".format(money, m))
         ptt.give_money(m, str(money))
         show_user("OK!")
+
+    ptt.logout()
 
     show_user("All Done! Thanks for using MumiGiveP!")
     if os.name == 'nt':

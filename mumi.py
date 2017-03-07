@@ -39,6 +39,10 @@ class MumiGui:
         self.go_button = Button(root, text=u"發射姆咪", command=self.gen_list)
         self.go_button.grid(row=7, column=3)
 
+        self.console = Text(root, width=80, height=10, bg='black', fg='white')
+        self.console.configure(state='disabled')
+        self.console.grid(row=8, columnspan=4)
+
     def _create_url_field(self, row):
         e = Entry(self.root, width=40)
         e.grid(row=row, column=1, columnspan=3, sticky=W)
@@ -187,7 +191,7 @@ class MumiGui:
             master=top,
             wrap=WORD,
             width=20,
-            height=10
+            height=40
         )
 
         for name in lst:
@@ -204,14 +208,16 @@ class MumiGui:
             top.destroy()
             app.root.after(100, app.start_send_money)
 
-        go_button = Button(top, text=u"確定", command=go)
-        go_button.pack()
-
         go_button = Button(top, text=u"取消", command=top.destroy)
-        go_button.pack()
+        go_button.pack(side=RIGHT)
+
+        go_button = Button(top, text=u"確定", command=go)
+        go_button.pack(side=RIGHT)
 
     def show(self, msg):
-        print msg
+        self.console.configure(state='normal')
+        self.console.insert('0.0', msg + '\n')
+        self.console.configure(state='disabled')
 
     def run(self):
         self.root.mainloop()
@@ -242,7 +248,6 @@ class PttThread(threading.Thread):
     def _failed(self):
         self._send_msg({'type': 'failed',
                         'sent': self.lst[:self._sent_count]})
-        self.stop()
 
     def run(self):
         user, lst, money = self.user, self.lst, self.money
@@ -253,20 +258,28 @@ class PttThread(threading.Thread):
         }
         ptt = PttIo(user, 10, callbacks)
 
+        if not ptt.login():
+            tkMessageBox.showerror(u"連線失敗",
+                                   u"無法與 PTT 建立連線。")
+            return
         self._send_msg('Login in to PTT...')
-        ptt.login()
 
+        if not ptt.go_store():
+            tkMessageBox.showerror(u"登入失敗",
+                                   u"無法登入PTT，請檢查帳號密碼有無錯誤。")
+            return
         self._send_msg('Entering PTT store...')
-        ptt.go_store()
 
+        self._send_msg('Start!')
         for m in lst:
-            self._send_msg("Give {} money to {}: ...".format(money, m))
-            ptt.give_money(m, str(money))
-            self._send_msg("OK!")
-            self._sent_count += 1
+            if ptt.give_money(m, str(money)):
+                self._send_msg("Give {} money to {}. Done!".format(money, m))
+                self._sent_count += 1
+            else:
+                self._failed()
+                return
 
         ptt.logout()
-
         self._send_msg(SUCCEED_MSG)
 
     def stop(self):

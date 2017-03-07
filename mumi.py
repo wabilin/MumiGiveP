@@ -1,88 +1,193 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import getpass
+from Tkinter import *
+import ScrolledText
+import tkMessageBox
 from ptt_agent import auto_give_money
 from ptt_html import push_list_from_url
 from push_filter import filter_push_list
 
 
-def ask_allowed_types():
-    allowed_types = []
+class MumiGui:
+    def __init__(self, root):
+        self.root = root
+        root.minsize(width=600, height=400)
+        self.entries = {}
+        self.lst = []
+        self._setup_ui()
 
-    r = raw_input("Give money to 'PUSH(1)'s? [Y/n]: ")
-    if r != 'n' and r != 'N':
-        allowed_types.append(1)
+    def _setup_ui(self):
+        root = self.root
 
-    r = raw_input("Give money to 'BOO (2)'s? [Y/n]: ")
-    if r != 'n' and r != 'N':
-        allowed_types.append(2)
+        self._create_url_field(row=0)
+        self._create_account_field(row=1)
+        self._create_money_amount_fields(2)
 
-    r = raw_input("Give money to '--> (3)'s? [Y/n]: ")
-    if r != 'n' and r != 'N':
-        allowed_types.append(3)
+        Label(root, text=u"姆咪選項").grid(row=4)
 
-    return allowed_types
+        self._create_duplicate_option(5)
 
+        self._create_give_push_options(6)
 
-def ask_for_setting(amount):
-    # default values
-    opt = {
-        'allowed_types': [1, 2, 3],
-        'floor_limit': None,
-        'step': 1,
-        'duplicate': False,
-        'amount': amount
-    }
+        self.go_button = Button(root, text=u"發射姆咪", command=self.gen_list)
+        self.go_button.grid(row=7, column=3)
 
-    r = raw_input("Would you like to set advanced settings? [y/N]: ")
-    if r != 'y' and r != 'Y':
+    def _create_url_field(self, row):
+        e = Entry(self.root, width=40)
+        e.grid(row=row, column=1, columnspan=3, sticky=W)
+
+        label = Label(self.root, text=u"PTT 文章網址:")
+        label.grid(row=row, column=0, sticky=E)
+        label.bind('<Button-1>', lambda x: e.focus_set())
+
+        self.entries['url'] = e
+
+    def _create_account_field(self, row):
+        root = self.root
+
+        id_entry = Entry(root, show='*')
+        password_entry = Entry(root, show='*')
+
+        id_entry.grid(row=row, column=1, sticky=W)
+        password_entry.grid(row=row, column=3, sticky=W)
+
+        l2 = Label(root, text=u"您的 PTT 帳號:")
+        l2.grid(row=row, column=0, sticky=E)
+        l2.bind('<Button-1>', lambda e: id_entry.focus_set())
+
+        l3 = Label(root, text=u"密碼:")
+        l3.grid(row=row, column=2, sticky=E)
+        l3.bind('<Button-1>', lambda e: password_entry.focus_set())
+
+        self.entries['id'] = id_entry
+        self.entries['password'] = password_entry
+
+    def _create_money_amount_fields(self, row):
+        root = self.root
+
+        Label(root, text=u"發送數量:").grid(row=row, column=0, sticky=E)
+        amount_en = Entry(root, width=5)
+        amount_en.grid(row=row, column=1, sticky=W)
+
+        Label(root, text=u"每筆稅前金額:").grid(row=row, column=2, sticky=E)
+        money_en = Entry(root, width=5)
+        money_en.grid(row=row, column=3, sticky=W)
+
+        Label(root, text=u"樓發一次").grid(row=row+1, column=1, sticky=W)
+        step_en = Entry(root, width=2)
+        step_en.insert(END, '1')
+        step_en.grid(row=row+1, column=0, sticky=E)
+
+        self.entries['amount'] = amount_en
+        self.entries['money'] = money_en
+        self.entries['step'] = step_en
+
+    def _create_duplicate_option(self, row):
+        self.entries['duplicate'] = BooleanVar(value=False)
+        c = Checkbutton(self.root, text=u"可重複發送給同ㄧ位鄉民",
+                        variable=self.entries['duplicate'],
+                        onvalue=True, offvalue=False)
+        c.grid(row=row, column=0)
+
+    def _create_give_push_options(self, start_row):
+        root = self.root
+        Label(root, text=u"只發給: ").grid(row=start_row)
+        self.give_push = {1: BooleanVar(value=True),
+                          2: BooleanVar(value=True),
+                          3: BooleanVar(value=True)}
+
+        push_cht = {1: u"推", 2: u"噓", 3: u"→"}
+        for i in range(1, 4):
+            check = Checkbutton(root, text=push_cht[i],
+                                variable=self.give_push[i],
+                                onvalue=True, offvalue=False)
+            check.grid(row=start_row, column=i)
+
+    def _get_options(self):
+        allowed_push = [x for x in range(1, 4) if self.give_push[x].get()]
+        step = to_int(self.entries['step'].get())
+        duplicate = bool(self.entries['duplicate'].get())
+        amount = to_int(self.entries['amount'].get())
+
+        opt = {
+            'allowed_types': allowed_push,
+            'floor_limit': None,
+            'step': step,
+            'duplicate': duplicate,
+            'amount': amount
+        }
+
         return opt
 
-    opt['allowed_types'] = ask_allowed_types()
+    def send_money(self):
+        user = {'id': self.entries['id'].get(),
+                'password': self.entries['password'].get()}
+        money = to_int(self.entries['money'].get())
+        if money:
+            auto_give_money(money, self.lst, user, printer=self.show)
 
-    r = raw_input("Set Maximum Floor[y/N]: ")
-    if r == 'y' or r == 'Y':
-        opt['floor_limit'] = int(raw_input("Maximum Floor: "))
+    def gen_list(self):
+        opt = self._get_options()
+        if not (opt['step'] and opt['amount']):
+            return
 
-    r = raw_input("Allow duplicate IDs? [y/N]: ")
-    if r == 'y' or r == 'Y':
-        opt['duplicate'] = True
+        push_list = push_list_from_url(self.entries['url'].get())
+        lst = filter_push_list(push_list, opt)
+        self.lst = lst
 
-    r = raw_input("Only give to N, 2N, 3N...kN floors[y/N]: ")
-    if r == 'y' or r == 'Y':
-        opt['step'] = int(raw_input("N = ? : "))
+        top = Toplevel()
+        top.minsize(400, 500)
+        top.title(u"姆咪名單")
 
-    return opt
+        list_area = ScrolledText.ScrolledText(
+            master=top,
+            wrap=WORD,
+            width=20,
+            height=10
+        )
+
+        for name in lst:
+            list_area.insert(END, "{}\n".format(name))
+
+        Label(top, text=u"即將發送 P 幣給以下鄉民：").pack()
+
+        list_area.configure(state="disabled")
+        list_area.pack()
+
+        app = self
+
+        def go():
+            top.destroy()
+            app.root.after(100, app.send_money)
+
+        go_button = Button(top, text=u"確定", command=go)
+        go_button.pack()
+
+        go_button = Button(top, text=u"取消", command=top.destroy)
+        go_button.pack()
+
+    def show(self, msg):
+        print msg
+
+    def run(self):
+        self.root.mainloop()
 
 
-def get_account():
-    uid = raw_input("Enter your PTT id: ")
-    pw = getpass.getpass("Enter your PTT password:")
-
-    return {'id': uid, 'password': pw}
+def to_int(s):
+    try:
+        return int(s)
+    except ValueError:
+        tkMessageBox.showinfo("Error",
+                              "Con not convert {} to integer.".format(s))
+        return None
 
 
 def main():
-    print "Please enter the url to the PTT post:"
-    url = raw_input()
-    amount = int(raw_input("How many person (at most): "))
-    money = int(raw_input("How much money for each one: "))
-
-    push_list = push_list_from_url(url)
-    opt = ask_for_setting(amount)
-
-    lst = filter_push_list(push_list, opt)
-
-    print "It's going to give money to these IDs:"
-
-    for i, name in enumerate(lst):
-        print str(i+1) + ' : ' + name
-
-    yes = raw_input("Aru you sure [y/N]: ")
-    if yes == 'y' or yes == 'Y':
-        user = get_account()
-        auto_give_money(money, lst, user)
+    root = Tk()
+    root.title(u'姆咪姆咪發錢錢')
+    app = MumiGui(root)
+    app.run()
 
 
 if __name__ == '__main__':

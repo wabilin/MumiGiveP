@@ -58,6 +58,14 @@ class PttIo:
         self.expect_action("註冊", self.account)
         self.expect_action("請輸入您的密碼", self.password)
 
+    def go_store(self):
+        self.expect_action("主功能表", 'p',
+                           opt_acts=[["請按任意鍵繼續", ''],
+                                     ["刪除其他", 'y'],
+                                     ["錯誤嘗試的記錄", 'n']])
+
+        self.expect_action("網路遊樂場", 'p')
+
     def give_money(self, name, money):
         if name.lower() == self.account.lower():
             self.printer("Can not give money to yourself.")
@@ -112,18 +120,11 @@ def auto_give_money(money, mumi_list, user, printer=None):
 
     ptt = PttIo(tn, user, 10, show_user)
 
+    show_user('Login in to PTT...')
     ptt.login()
 
-    show_user('Login in to PTT...')
-
-    ptt.expect_action("主功能表", 'p',
-                      opt_acts=[["請按任意鍵繼續", ''],
-                                ["刪除其他", 'y'],
-                                ["錯誤嘗試的記錄", 'n']])
-
-    ptt.expect_action("網路遊樂場", 'p')
-
     show_user('Entering PTT store...')
+    ptt.go_store()
 
     for m in mumi_list:
         show_user("Give {} money to {}: ...".format(money, m))

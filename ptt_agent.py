@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import StringIO
-import os
 import telnetlib
 from time import sleep
 from lib import uao_decode
@@ -14,15 +13,21 @@ def ptt_to_utf8(ptt_msg):
     return ptt_msg.decode('uao_decode').encode('utf8')
 
 
+class PttAction:
+    def __init__(self, expected, keyin, opt_acts=None, newline=True):
+        pass
+
+
 class PttIo:
-    def __init__(self, tn, user, time_limit, printer):
-        self.tn = tn
+    def __init__(self, user, time_limit, callbacks):
+        self.tn = telnetlib.Telnet(HOST)
         self.account = user['id']
         self.password = user['password']
         self.time_limit = time_limit
         self.buffer = ''
         self._log = StringIO.StringIO()
-        self.printer = printer
+        self.printer = callbacks['printer']
+        self.failed = callbacks['failed']
 
     def clear_buffer(self):
         self.buffer = ''
@@ -52,7 +57,7 @@ class PttIo:
                     buf = ''
 
         self.log(msg)
-        self.timeout_exit()
+        self.timeout_fail()
 
     def login(self):
         self.expect_action("註冊", self.account)
@@ -93,13 +98,13 @@ class PttIo:
                                      ["您確定要離開", "y\r\n"]],
                            newline=False)
 
-    def timeout_exit(self):
+    def timeout_fail(self):
         print "Can not get response in time."
         log_file = open('log.txt', 'w')
         log_file.write(self._log.getvalue())
         self._log.close()
         log_file.close()
-        exit()
+        self.failed()
 
 
 def enter_msg(tn, msg, newline):
@@ -107,32 +112,3 @@ def enter_msg(tn, msg, newline):
         tn.write(msg + "\r\n")
     else:
         tn.write(msg)
-
-
-def auto_give_money(money, mumi_list, user, printer=None):
-    def show_user(msg):
-        if printer:
-            printer(msg)
-        else:
-            print msg
-
-    tn = telnetlib.Telnet(HOST)
-
-    ptt = PttIo(tn, user, 10, show_user)
-
-    show_user('Login in to PTT...')
-    ptt.login()
-
-    show_user('Entering PTT store...')
-    ptt.go_store()
-
-    for m in mumi_list:
-        show_user("Give {} money to {}: ...".format(money, m))
-        ptt.give_money(m, str(money))
-        show_user("OK!")
-
-    ptt.logout()
-
-    show_user("All Done! Thanks for using MumiGiveP!")
-    if os.name == 'nt':
-        os.system('pause')

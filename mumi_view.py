@@ -67,7 +67,7 @@ class MumiUi:
     def _create_account_field(self, row):
         root = self.root
 
-        id_entry = Entry(root, show='*')
+        id_entry = Entry(root)
         password_entry = Entry(root, show='*')
 
         id_entry.grid(row=row, column=1, sticky=W)
@@ -89,12 +89,12 @@ class MumiUi:
 
         Label(root, text=u"發送數量:").grid(row=row, column=0, sticky=E)
         amount_en = Entry(root, width=5)
-        amount_en.insert(END, '100')
+        amount_en.insert(END, '10')
         amount_en.grid(row=row, column=1, sticky=W)
 
         Label(root, text=u"每筆稅前金額:").grid(row=row, column=2, sticky=E)
         money_en = Entry(root, width=5)
-        money_en.insert(END, '100')
+        money_en.insert(END, '10')
         money_en.grid(row=row, column=3, sticky=W)
 
         Label(root, text=u"樓發一次").grid(row=row+1, column=1, sticky=W)

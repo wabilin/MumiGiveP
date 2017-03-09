@@ -113,6 +113,6 @@ def push_list_from_clipboard():
         return {'push': push, 'id': u_id}
 
     content = pyperclip.paste()
-    lines = content.split('\r')
+    lines = re.split('\r\n|\r|\n', content)
 
     return [x for x in map(construct_push, lines) if x]

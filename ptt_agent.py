@@ -42,7 +42,13 @@ class PttIo:
         loop_times = self.time_limit * 5  # waiting time is 0.2 second
         for _ in xrange(loop_times):
             sleep(waiting_time)
-            buf += telnet.read_very_eager()
+
+            try:
+                buf += telnet.read_very_eager()
+            except EOFError:
+                # connection end by host
+                return False
+
             msg = ptt_to_utf8(buf)
 
             if expected in msg:

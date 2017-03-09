@@ -2,234 +2,82 @@
 # -*- coding: utf-8 -*-
 
 from Tkinter import *
-import ScrolledText
-import tkMessageBox
-import os
 import threading
 import Queue
 from ptt_agent import PttIo
 from ptt_html import push_list_from_url
 from push_filter import filter_push_list
-
+from mumi_view import MumiUi
+from mumi_view import show_error
+from mumi_view import confirm_list_dialog
 
 SUCCEED_MSG = "***Succeed***"
 
 
-class MumiGui:
-    def __init__(self, root):
-        self.root = root
-        root.minsize(width=600, height=400)
-        self.entries = {}
-        self.lst = []
+class Mumi:
+    def __init__(self, ui):
         self._pttThread = None
-        self._setup_ui()
+        self._ui = ui
+        self._lst = []
+        self._data = None
 
-    def _setup_ui(self):
-        root = self.root
+    def start(self):
+        self._ui.buttons['GO'].config(command=self._go_action)
+        self._ui.start()
 
-        self._create_url_field(row=0)
-        self._create_account_field(row=1)
-        self._create_money_amount_fields(2)
-
-        Label(root, text=u"姆咪選項").grid(row=4)
-
-        self._create_duplicate_option(5)
-        self._create_give_push_options(6)
-
-        self.go_button = Button(root, text=u"發射姆咪", command=self.gen_list)
-        self.go_button.grid(row=7, column=3)
-
-        self.console = Text(root, width=80, height=10, bg='black', fg='white')
-        self.console.configure(state='disabled')
-        self.console.grid(row=8, columnspan=4)
-
-    def _create_url_field(self, row):
-        e = Entry(self.root, width=40)
-        e.grid(row=row, column=1, columnspan=3, sticky=W)
-
-        label = Label(self.root, text=u"PTT 文章網址:")
-        label.grid(row=row, column=0, sticky=E)
-        label.bind('<Button-1>', lambda x: e.focus_set())
-
-        self.entries['url'] = e
-
-    def _create_account_field(self, row):
-        root = self.root
-
-        id_entry = Entry(root, show='*')
-        password_entry = Entry(root, show='*')
-
-        id_entry.grid(row=row, column=1, sticky=W)
-        password_entry.grid(row=row, column=3, sticky=W)
-
-        l2 = Label(root, text=u"您的 PTT 帳號:")
-        l2.grid(row=row, column=0, sticky=E)
-        l2.bind('<Button-1>', lambda e: id_entry.focus_set())
-
-        l3 = Label(root, text=u"密碼:")
-        l3.grid(row=row, column=2, sticky=E)
-        l3.bind('<Button-1>', lambda e: password_entry.focus_set())
-
-        self.entries['id'] = id_entry
-        self.entries['password'] = password_entry
-
-    def _create_money_amount_fields(self, row):
-        root = self.root
-
-        Label(root, text=u"發送數量:").grid(row=row, column=0, sticky=E)
-        amount_en = Entry(root, width=5)
-        amount_en.grid(row=row, column=1, sticky=W)
-
-        Label(root, text=u"每筆稅前金額:").grid(row=row, column=2, sticky=E)
-        money_en = Entry(root, width=5)
-        money_en.grid(row=row, column=3, sticky=W)
-
-        Label(root, text=u"樓發一次").grid(row=row+1, column=1, sticky=W)
-        step_en = Entry(root, width=2)
-        step_en.insert(END, '1')
-        step_en.grid(row=row+1, column=0, sticky=E)
-
-        self.entries['amount'] = amount_en
-        self.entries['money'] = money_en
-        self.entries['step'] = step_en
-
-    def _create_duplicate_option(self, row):
-        self.entries['duplicate'] = BooleanVar(value=False)
-        c = Checkbutton(self.root, text=u"可重複發送給同ㄧ位鄉民",
-                        variable=self.entries['duplicate'],
-                        onvalue=True, offvalue=False)
-        c.grid(row=row, column=0)
-
-    def _create_give_push_options(self, start_row):
-        root = self.root
-        Label(root, text=u"只發給: ").grid(row=start_row)
-        self.give_push = {1: BooleanVar(value=True),
-                          2: BooleanVar(value=True),
-                          3: BooleanVar(value=True)}
-
-        push_cht = {1: u"推", 2: u"噓", 3: u"→"}
-        for i in range(1, 4):
-            check = Checkbutton(root, text=push_cht[i],
-                                variable=self.give_push[i],
-                                onvalue=True, offvalue=False)
-            check.grid(row=start_row, column=i)
-
-    def _get_options(self):
-        allowed_push = [x for x in range(1, 4) if self.give_push[x].get()]
-        step = to_int(self.entries['step'].get())
-        duplicate = bool(self.entries['duplicate'].get())
-        amount = to_int(self.entries['amount'].get())
-
-        opt = {
-            'allowed_types': allowed_push,
-            'floor_limit': None,
-            'step': step,
-            'duplicate': duplicate,
-            'amount': amount
-        }
-
-        return opt
+    def _deal_with_failed(self, msg):
+        retry = self._ui.ask_retry()
+        if retry:
+            self._lst = msg['sent']
+            self._ask_for_give_p()
+        else:
+            self._ui.quit()
 
     def _listen_ptt_thread(self, msg_queue):
         while not msg_queue.empty():
             msg = msg_queue.get()
             if type(msg) is str:
                 if msg == SUCCEED_MSG:
-                    self._done()
+                    self._ui.done()
                     return
                 else:
-                    self.show(msg)
+                    self._ui.show(msg)
 
             elif type(msg) is dict:
-                self.lst = msg['sent']
-                self._fail()
+                self._deal_with_failed(msg)
                 return
 
-        self.root.after(100, self._listen_ptt_thread, msg_queue)
+        self._ui.after(100, self._listen_ptt_thread, msg_queue)
 
-    def _done(self):
-        tkMessageBox.showinfo(u"姆咪大成功",
-                              u"全部發完惹！感謝您使用姆咪姆咪發錢錢！")
-        self.root.quit()
-
-    def _fail(self):
-        retry = tkMessageBox.askretrycancel(u"姆咪嗚",
-                                            u"發錢中途失敗，是否要重試? \n"
-                                            u"(發送給未發送的鄉民)")
-        if retry:
-            pass
-        else:
-            self.root.quit()
-
-    def start_send_money(self):
-        user = {'id': self.entries['id'].get(),
-                'password': self.entries['password'].get()}
-        money = to_int(self.entries['money'].get())
+    def _start_give_p(self, user, money):
         if not money:
             return
 
         msg_queue = Queue.Queue()
-        ptt_thread = PttThread(user, money, self.lst,
+        ptt_thread = PttThread(user, money, self._lst,
                                msg_queue=msg_queue)
         ptt_thread.start()
         self._listen_ptt_thread(msg_queue)
 
-    def gen_list(self):
-        opt = self._get_options()
+    def _go_action(self):
+        data = self._ui.get_data()
+
+        opt = data['options']
         if not (opt['step'] and opt['amount']):
             return
 
-        push_list = push_list_from_url(self.entries['url'].get())
-        lst = filter_push_list(push_list, opt)
-        self.lst = lst
+        push_list = push_list_from_url(data['url'])
+        self._lst = filter_push_list(push_list, opt)
 
-        top = Toplevel()
-        top.minsize(400, 500)
-        top.title(u"姆咪名單")
+        self.user = data['user']
+        self.money = data['money']
 
-        list_area = ScrolledText.ScrolledText(
-            master=top,
-            wrap=WORD,
-            width=20,
-            height=40
-        )
+        self._ask_for_give_p()
 
-        for name in lst:
-            list_area.insert(END, "{}\n".format(name))
-
-        Label(top, text=u"即將發送 P 幣給以下鄉民：").pack()
-
-        list_area.configure(state="disabled")
-        list_area.pack()
-
-        app = self
-
-        def go():
-            top.destroy()
-            app.root.after(100, app.start_send_money)
-
-        go_button = Button(top, text=u"取消", command=top.destroy)
-        go_button.pack(side=RIGHT)
-
-        go_button = Button(top, text=u"確定", command=go)
-        go_button.pack(side=RIGHT)
-
-    def show(self, msg):
-        self.console.configure(state='normal')
-        self.console.insert('0.0', msg + '\n')
-        self.console.configure(state='disabled')
-
-    def run(self):
-        self.root.mainloop()
-
-
-def to_int(s):
-    try:
-        return int(s)
-    except ValueError:
-        tkMessageBox.showinfo("Error",
-                              "Con not convert {} to integer.".format(s))
-        return None
+    def _ask_for_give_p(self):
+        u, m = self.user, self.money
+        confirm_list_dialog(self._lst,
+                            lambda: self._start_give_p(u, m))
 
 
 class PttThread(threading.Thread):
@@ -247,7 +95,7 @@ class PttThread(threading.Thread):
 
     def _failed(self):
         self._send_msg({'type': 'failed',
-                        'sent': self.lst[:self._sent_count]})
+                        'sent': self.lst[self._sent_count:]})
 
     def run(self):
         user, lst, money = self.user, self.lst, self.money
@@ -259,18 +107,16 @@ class PttThread(threading.Thread):
         ptt = PttIo(user, 10, callbacks)
 
         if not ptt.login():
-            tkMessageBox.showerror(u"連線失敗",
-                                   u"無法與 PTT 建立連線。")
+            show_error(u"連線失敗", u"無法與 PTT 建立連線。")
             return
         self._send_msg('Login in to PTT...')
 
         if not ptt.go_store():
-            tkMessageBox.showerror(u"登入失敗",
-                                   u"無法登入PTT，請檢查帳號密碼有無錯誤。")
+            show_error(u"登入失敗", u"無法登入PTT，請檢查帳號密碼有無錯誤。")
             return
+
         self._send_msg('Entering PTT store...')
 
-        self._send_msg('Start!')
         for m in lst:
             if ptt.give_money(m, str(money)):
                 self._send_msg("Give {} money to {}. Done!".format(money, m))
@@ -282,18 +128,13 @@ class PttThread(threading.Thread):
         ptt.logout()
         self._send_msg(SUCCEED_MSG)
 
-    def stop(self):
-        self._stop.set()
-
-    def stopped(self):
-        return self._stop.isSet()
-
 
 def main():
     root = Tk()
     root.title(u'姆咪姆咪發錢錢')
-    app = MumiGui(root)
-    app.run()
+    ui = MumiUi(root)
+    app = Mumi(ui)
+    app.start()
 
 
 if __name__ == '__main__':

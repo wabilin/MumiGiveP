@@ -87,7 +87,7 @@ class PttIo:
     def go_store(self):
         actions = [PttAct("主功能表", 'p',
                           opt_acts=[["請按任意鍵繼續", ''],
-                                    ["刪除其他", 'y'],
+                                    ["刪除其他", 'n'],
                                     ["錯誤嘗試的記錄", 'n']]),
                    PttAct("網路遊樂場", 'p')]
         return self._expect_actions(actions)

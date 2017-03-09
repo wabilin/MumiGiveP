@@ -108,7 +108,7 @@ def push_list_from_clipboard():
         u_id = re.sub('\\s', '', words[1])
         if u_id[-1] != ':':
             return None
-        u_id = re.sub(':', '', u_id)
+        u_id = re.sub(':', '', u_id).encode('ascii')
 
         return {'push': push, 'id': u_id}
 

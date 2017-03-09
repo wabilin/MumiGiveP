@@ -120,16 +120,6 @@ class PttIo:
     def log(self):
         return self._log
 
-    '''
-    def timeout_fail(self):
-        print "Can not get response in time."
-        log_file = open('log.txt', 'w')
-        log_file.write(self._log.getvalue())
-        self._log.close()
-        log_file.close()
-        self.failed()
-    '''
-
 
 def enter_msg(tn, msg, newline):
     if newline:

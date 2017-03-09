@@ -5,11 +5,9 @@ from Tkinter import *
 import threading
 import Queue
 from ptt_agent import PttIo
-from ptt_html import push_list_from_url
+from push_list_gen import push_list_from_url, push_list_from_clipboard
 from push_filter import filter_push_list
-from mumi_view import MumiUi
-from mumi_view import show_error
-from mumi_view import confirm_list_dialog
+from mumi_view import MumiUi, show_error, confirm_list_dialog
 
 SUCCEED_MSG = "***Succeed***"
 
@@ -66,7 +64,8 @@ class Mumi:
         if not (opt['step'] and opt['amount']):
             return
 
-        push_list = push_list_from_url(data['url'])
+        push_list = (push_list_from_clipboard() if self._ui.from_clipboard
+                     else push_list_from_url(data['url']))
         self._lst = filter_push_list(push_list, opt)
 
         self.user = data['user']

@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import re
 import requests
+import pyperclip
 
 from HTMLParser import HTMLParser
 
@@ -84,3 +86,33 @@ def push_list_from_url(url):
     parser.feed(ptt_content.text)
 
     return r.push_list
+
+
+def push_list_from_clipboard():
+    push_type_dict = {
+        u"推": 1,
+        u"噓": 2,
+        u"\u2192": 3
+    }
+
+    def construct_push(line):
+        words = line.split(' ')
+        if len(words) < 2:
+            return None
+
+        push = re.sub('\\s', '', words[0])
+        if push not in push_type_dict:
+            return None
+        push = push_type_dict[push]
+
+        u_id = re.sub('\\s', '', words[1])
+        if u_id[-1] != ':':
+            return None
+        u_id = re.sub(':', '', u_id)
+
+        return {'push': push, 'id': u_id}
+
+    content = pyperclip.paste()
+    lines = content.split('\r')
+
+    return [x for x in map(construct_push, lines) if x]

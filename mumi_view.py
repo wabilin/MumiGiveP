@@ -44,6 +44,12 @@ class MumiUi:
         self.console.grid(row=row, columnspan=4)
 
     def _create_go_button(self, row):
+        self._entries['clipboard'] = BooleanVar(value=False)
+        c = Checkbutton(self.root, text=u"從剪貼簿抓取貼文 (不從網頁抓取)",
+                        variable=self._entries['clipboard'],
+                        onvalue=True, offvalue=False)
+        c.grid(row=row, column=2)
+
         go_button = Button(self.root, text=u"發射姆咪")
         go_button.grid(row=row, column=3)
         self.buttons['GO'] = go_button
@@ -123,6 +129,10 @@ class MumiUi:
 
     def _entry_val(self, name):
         return self._entries[name].get()
+
+    @property
+    def from_clipboard(self):
+        return bool(self._entry_val('clipboard'))
 
     def get_data(self):
         user = {'id': self._entry_val('id'),

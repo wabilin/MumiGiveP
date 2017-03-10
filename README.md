@@ -11,7 +11,7 @@ Windows 及 MacOS 可以直接下載執行檔：
 Google Drive: https://goo.gl/HOHaot
 
 ### Source
-建議 Linux 及 MacOS 使用者，直接執行原始碼。t
+建議 Linux 及 MacOS 使用者，直接執行原始碼。
 
 Download zip at [Github](https://github.com/wabilin/MumiGiveP)
 
@@ -51,9 +51,11 @@ https://github.com/kennethreitz/requests
 1. 推文內容條件
 1. SSH
 1. LOGO
+1. 編輯發送名單
 
 ### Not to do
 1. 抽獎
+1. 贊助作者
 
 # Thanks
 
@@ -65,3 +67,4 @@ https://github.com/kennethreitz/requests
  - bbbruce
  - Sasamumu
  - achero
+ - oz5566

@@ -4,12 +4,11 @@
 from Tkinter import *
 import threading
 import Queue
+import traceback
 from ptt_agent import PttIo
 from push_list_gen import push_list_from_url, push_list_from_clipboard
 from push_filter import filter_push_list
 from mumi_view import MumiUi, show_error, confirm_list_dialog
-
-SUCCEED_MSG = "***Succeed***"
 
 
 class Mumi:
@@ -26,7 +25,7 @@ class Mumi:
     def _deal_with_failed(self, msg):
         retry = self._ui.ask_retry()
         if retry:
-            self._lst = msg['sent']
+            self._lst = msg['data']
             self._ask_for_give_p()
         else:
             self._ui.quit()
@@ -34,14 +33,17 @@ class Mumi:
     def _listen_ptt_thread(self, msg_queue):
         while not msg_queue.empty():
             msg = msg_queue.get()
-            if type(msg) is str:
-                if msg == SUCCEED_MSG:
-                    self._ui.done()
-                    return
-                else:
-                    self._ui.show(msg)
+            msg_type, msg_data = msg['type'], msg['data']
 
-            elif type(msg) is dict:
+            if msg_type == 'succeed':
+                self._ui.done()
+                return
+            elif msg_type == 'normal':
+                self._ui.show(msg_data)
+            elif msg_type == 'error':
+                show_error(msg_data[0], msg_data[1])
+                return
+            else:  # Failed
                 self._deal_with_failed(msg)
                 return
 
@@ -89,49 +91,69 @@ class PttThread(threading.Thread):
         self._sent_count = 0
         self._stop = threading.Event()
 
-    def _send_msg(self, msg):
+    def _send_msg_obj(self, msg):
         self.msg_queue.put(msg)
 
-    def _failed(self):
-        self._send_msg({'type': 'failed',
-                        'sent': self.lst[self._sent_count:]})
+    def _send_normal_msg(self, msg):
+        self._send_msg_obj({'type': 'normal',
+                            'data': msg})
 
-    def run(self):
+    def _send_error_msg(self, msg):
+        self._send_msg_obj({'type': 'error',
+                            'data': msg})
+
+    def _send_succeed_msg(self):
+        self._send_msg_obj({'type': 'succeed',
+                            'data': None})
+
+    def _failed(self):
+        self._send_msg_obj({'type': 'failed',
+                            'data': self.lst[self._sent_count:]})
+
+    def _give_money(self):
         user, lst, money = self.user, self.lst, self.money
 
         callbacks = {
-            'printer': (lambda x: self._send_msg(x)),
+            'printer': (lambda x: self._send_normal_msg(x)),
             'failed': (lambda: self._failed())
         }
         ptt = PttIo(user, 10, callbacks)
 
         if not ptt.login():
-            show_error(u"連線失敗", u"無法與 PTT 建立連線。")
+            self._send_error_msg([u"連線失敗", u"無法與 PTT 建立連線。"])
             return
-        self._send_msg('Login in to PTT...')
+        self._send_normal_msg('Login in to PTT...')
 
         if not ptt.go_store():
-            show_error(u"登入失敗", u"無法登入PTT，請檢查帳號密碼有無錯誤。")
+            self._send_error_msg([u"登入失敗", u"無法登入PTT，請檢查帳號密碼有無錯誤。"])
             return
 
-        self._send_msg('Entering PTT store...')
+        self._send_normal_msg('Entering PTT store...')
 
-        for m in lst:
-            if ptt.give_money(m, str(money)):
-                self._send_msg("Give {} money to {}. Done!".format(money, m))
+        for name in lst:
+            if ptt.give_money(name, str(money)):
+                msg = "Give {} money to {}. Done!".format(money, name)
+                self._send_normal_msg(msg)
                 self._sent_count += 1
             else:
                 self._failed()
                 return
 
         ptt.logout()
-        self._send_msg(SUCCEED_MSG)
+        self._send_succeed_msg()
+
+    def run(self):
+        try:
+            self._give_money()
+        except:
+            f = open('log.txt', 'w')
+            traceback.print_exc(limit=20, file=f)
+            f.close()
+            self._send_error_msg([u"未預期錯誤發生", u"請於 log.txt 查看詳細錯誤紀錄"])
 
 
 def main():
-    root = Tk()
-    root.title(u'姆咪姆咪發錢錢')
-    ui = MumiUi(root)
+    ui = MumiUi()
     app = Mumi(ui)
     app.start()
 

@@ -16,7 +16,9 @@ def to_int(s):
 
 
 class MumiUi:
-    def __init__(self, root):
+    def __init__(self):
+        root = Tk()
+        root.title(u'姆咪姆咪發錢錢')
         self.root = root
         root.minsize(width=600, height=400)
         self._entries = {}

@@ -59,12 +59,4 @@ https://github.com/kennethreitz/requests
 
 # Thanks
 
-特別感謝下列鄉民們，在本程式開發階段幫忙試用並提供優質回饋。
 
- - oooptt
- - alex94539
- - defendant
- - bbbruce
- - Sasamumu
- - achero
- - oz5566

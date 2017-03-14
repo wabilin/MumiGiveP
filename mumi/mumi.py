@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from Tkinter import *
 import threading
 import Queue
 import traceback
@@ -9,6 +8,9 @@ from ptt_agent import PttIo
 from push_list_gen import push_list_from_url, push_list_from_clipboard
 from push_filter import filter_push_list
 from mumi_view import MumiUi, show_error, confirm_list_dialog
+
+
+__version__ = '0.4.1'
 
 
 class Mumi:

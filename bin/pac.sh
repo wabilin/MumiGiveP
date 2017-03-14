@@ -8,7 +8,7 @@ if [ "$#" -lt "2" ]; then
     echo "Get: $# ."
 else
     name_head="MumiGiveP_"
-    mumi_path="../mumi.py"
+    mumi_path="../mumi/mumi.py"
 
     n_name="$name_head$ver"
     tail_1=".zip"

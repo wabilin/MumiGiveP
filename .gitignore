@@ -6,3 +6,5 @@ log.txt
 build
 dist
 *.spec
+.tern-project
+

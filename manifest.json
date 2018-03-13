@@ -12,12 +12,12 @@
   "content_scripts": [
     {
       "matches": ["*://term.ptt.cc/*"],
-      "js": ["lib/jquery-3.2.1.min.js", "mumi.js"]
+      "js": ["mumi.js"]
     }
   ],
-	
+
   "permissions":[
-	"activeTab"
+    "activeTab"
   ],
 
   "browser_action": {

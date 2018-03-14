@@ -9,15 +9,10 @@
     "48": "icons/border-48.png"
   },
 
-  "content_scripts": [
-    {
-      "matches": ["*://term.ptt.cc/*"],
-      "js": ["mumi.js"]
-    }
-  ],
-
   "permissions":[
-    "activeTab"
+      "activeTab",
+      "tabs",
+      "notifications"
   ],
 
   "browser_action": {

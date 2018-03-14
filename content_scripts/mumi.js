@@ -1,12 +1,12 @@
 const getPttChrome = () => {
-  return window.wrappedJSObject.pttchrome.app;
+  const win = window.wrappedJSObject || window;
+  return win.pttchrome.app;
 };
 
 const arrowLeft = () => {
+  const ptt = getPttChrome();
   ptt.conn.send('\x1b[D');
 };
-
-// setInterval(arrowLeft, 3000);
 
 const getBbsLines = () => {
   return document.querySelectorAll('[data-type="bbsline"]');
@@ -71,3 +71,12 @@ const parsePushData = (line) => {
     id: id
   };
 };
+
+const listener = (request, sender, sendResponse) => {
+  console.log('mumi!!');
+  arrowLeft();
+};
+if (chrome) {
+  browser = chrome;
+}
+browser.runtime.onMessage.addListener(listener);

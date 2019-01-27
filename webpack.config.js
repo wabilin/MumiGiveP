@@ -1,17 +1,19 @@
 const path = require("path");
 
+const projectDir = __dirname;
+const sourceDir = path.join(projectDir, 'src');
 const config = {
   optimization: {
     minimize: true
   },
 
   entry: {
-    mumi: "./content_scripts/mumi.js",
-    popup: "./popup/popup.js"
+    mumi: path.join(sourceDir, "content_scripts/mumi.js"),
+    popup: path.join(sourceDir, "popup/popup.js")
   },
 
   output: {
-    path: path.resolve(__dirname, "addon"),
+    path: path.resolve(projectDir, "addon"),
     filename: "[name].js"
   }
 }

@@ -1,6 +1,6 @@
 const browser = require('webextension-polyfill');
 
-const ALLOWED_ACTIONS = ['go-main'];
+const ALLOWED_ACTIONS = ['go-main', 'get-pushs'];
 
 document.addEventListener('click', (e) => {
   const action = e.target.name;

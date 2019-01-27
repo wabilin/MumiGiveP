@@ -4,6 +4,7 @@ const PTT_KEYS = Object.freeze({
   Enter: { key: 'Enter', keyCode: 13 },
   ArrowLeft: { key: 'ArrowLeft', keyCode: 37 },
   ArrowRight: { key: 'ArrowRight', keyCode: 39 },
+  PageDown: { key: 'PageDown', keyCode: 34 },
 });
 
 const DEFAULT_KB_OPTS = Object.freeze({
@@ -41,7 +42,7 @@ class PttController {
     try {
       await pttContent.repeatTillMatch(
         { row: 0 },
-        { textIncluded: '【主功能表】' },
+        { target: 'text', includes: '【主功能表】' },
         () => { this.sendKey('ArrowLeft'); },
       );
     } catch (err) {
@@ -51,9 +52,9 @@ class PttController {
   async parsePushs() {
     try {
       await pttContent.repeatTillMatch(
-        { row: 0 },
-        { textIncluded: '【主功能表】' },
-        () => { this.sendKey('ArrowLeft'); },
+        { row: 'all' },
+        { target: 'html', includes: '<span class=\"q2 b0\">※ 文章網址: </span>' },
+        () => { this.sendKey('PageDown'); },
       );
     } catch (err) {
       console.error(err);

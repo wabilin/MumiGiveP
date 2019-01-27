@@ -3,6 +3,7 @@ const pttContent = require('./pttContent');
 const PTT_KEYS = Object.freeze({
   Enter: { key: 'Enter', keyCode: 13 },
   ArrowLeft: { key: 'ArrowLeft', keyCode: 37 },
+  ArrowRight: { key: 'ArrowRight', keyCode: 39 },
 });
 
 const DEFAULT_KB_OPTS = Object.freeze({
@@ -31,7 +32,23 @@ class PttController {
     return input.dispatchEvent(keydownEvent(key));
   }
 
+  enterList(titleChar) {
+    this.sendText(titleChar);
+    this.sendKey('ArrowRight');
+  }
+
   async gotoMainPage() {
+    try {
+      await pttContent.repeatTillMatch(
+        { row: 0 },
+        { textIncluded: '【主功能表】' },
+        () => { this.sendKey('ArrowLeft'); },
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  async parsePushs() {
     try {
       await pttContent.repeatTillMatch(
         { row: 0 },

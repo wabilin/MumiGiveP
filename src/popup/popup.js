@@ -1,11 +1,12 @@
 const browser = require('webextension-polyfill');
 
-document.addEventListener('click', (e) => {
-  if (e.target.classList.contains('mumi')) {
-    const _content = e.target.textContent;
+const ALLOWED_ACTIONS = ['go-main'];
 
+document.addEventListener('click', (e) => {
+  const action = e.target.name;
+  if (ALLOWED_ACTIONS.includes(action)) {
     browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      browser.tabs.sendMessage(tabs[0].id, 'Hello');
+      browser.tabs.sendMessage(tabs[0].id, action);
     });
   } else if (e.target.classList.contains('clear')) {
     browser.tabs.reload();

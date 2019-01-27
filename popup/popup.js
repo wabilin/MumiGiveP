@@ -6,9 +6,9 @@ document.addEventListener("click", (e) => {
       browser = chrome;
     }
 
-    browser.tabs.executeScript(null, {
-      file: "/content_scripts/mumi.js"
-    });
+    // browser.tabs.executeScript(null, {
+    //   file: "/content_scripts/mumi.js"
+    // });
 
     browser.tabs.query({active: true, currentWindow: true}, (tabs) => {
       browser.tabs.sendMessage(tabs[0].id, 'Hello');

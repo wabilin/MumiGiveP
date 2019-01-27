@@ -10,17 +10,23 @@
   },
 
   "permissions":[
-      "activeTab",
-      "tabs",
-      "notifications"
+    "activeTab",
+    "tabs",
+    "notifications"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["*://term.ptt.cc/*"],
+      "js": ["content_scripts/mumi.js"]
+    }
   ],
 
   "browser_action": {
     "default_icon": {
-       "48": "icons/border-48.png"
+      "48": "icons/border-48.png"
     },
-	"default_popup": "popup/popup.html",
+    "default_popup": "popup/popup.html",
     "default_title": "Whereami?"
   }
 }
-

@@ -1,16 +1,90 @@
-const getPttChrome = () => {
-  const win = window.wrappedJSObject || window;
-  return win.pttchrome.app;
-};
+const browser = this.browser || this.chrome;
 
-const arrowLeft = () => {
-  const ptt = getPttChrome();
-  ptt.conn.send('\x1b[D');
-};
+const getPttIntput = () => document.getElementById('t');
+
+const PTT_KEYS = Object.freeze({
+  Enter: { key: 'Enter', keyCode: 13 },
+  ArrowLeft: { key: 'ArrowLeft', keyCode: 37 },
+});
+
+const DEFAULT_KB_OPTS = Object.freeze({
+  bubbles: true,
+});
+
+const keydownEvent = (key) => {
+  return new KeyboardEvent(
+    'keydown',
+    { ...DEFAULT_KB_OPTS, ...PTT_KEYS[key] },
+  );
+}
 
 const getBbsLines = () => {
   return document.querySelectorAll('[data-type="bbsline"]');
 };
+
+const waitMs = (ms) => {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  })
+}
+
+const waitForDocChange = async ({ timeout = 3000 } = {}) => {
+  let mutated = false;
+  const onDocumentMutataion = (mutationsList) => {
+    mutated = true;
+  };
+
+  const observer = new MutationObserver(onDocumentMutataion);
+  const pttContentDiv = document.getElementById('mainContainer');
+  observer.observe(pttContentDiv, { attributes: true, childList: true, subtree: true });
+
+  const startedAt = (new Date()).getTime();
+
+  while (true) {
+    if (mutated) {
+      observer.disconnect();
+      return true;
+    }
+
+    if ((new Date()).getTime() - startedAt > timeout) {
+      observer.disconnect();
+      throw new Error('Wait for document mutation timeout.');
+    } else {
+      await waitMs(10);
+    }
+  }
+}
+
+class PttController {
+  constructor(input) {
+    this.input = input;
+  }
+
+  sendText(text) {
+    const { input } = this;
+
+    input.value = text;
+    return input.dispatchEvent(new Event('input'));
+  }
+
+  sendKey(key) {
+    const { input } = this;
+    return input.dispatchEvent(keydownEvent(key));
+  }
+
+  async gotoMainPage() {
+    while(true) {
+      const header = getBbsLines()[0].innerHTML;
+      if (header.includes('【主功能表】')) {
+        return true;
+      }
+
+      this.sendKey('ArrowLeft');
+      await waitForDocChange()
+    }
+  }
+}
+
 
 const pushTypes = {
   PUSH: 1,
@@ -74,9 +148,14 @@ const parsePushData = (line) => {
 
 const listener = (request, sender, sendResponse) => {
   console.log('mumi!!');
-  arrowLeft();
+  const input = getPttIntput();
+  if (!input) {
+    console.error('Could not get PTT input element!');
+    return;
+  }
+
+  const ptt = new PttController(getPttIntput());
+  ptt.gotoMainPage()
+  .then(() => { console.log('Main page here!') });
 };
-if (chrome) {
-  browser = chrome;
-}
 browser.runtime.onMessage.addListener(listener);

@@ -8,7 +8,25 @@
 
 **DEMO** : [Youtube](https://youtu.be/kCIcbG_cX0U)
 
+## Build
 
+Production Build
+```
+yarn build
+```
+
+Development Build
+```
+yarn build-dev
+```
+
+使用 addon 資料夾中的內容載入 FireFox / Chrome Addon 除錯模式
+
+## Download and Installation
+Coming soon...
+
+
+# 桌面版 MumiGiveP （停止維護）
 ## Download and Installation
 ### Binary
 Windows 及 MacOS 使用者可從以下位置直接下載執行檔：
@@ -39,15 +57,6 @@ then run
 ```
 python mumi.py
 ```
-
-## License
-
-[GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)
-
-簡單講，您可以自由的使用、修改及散佈本程式。
-
-但必須同時附帶程式原始碼並使用GPL條款授權。
-
 
 ## 3rd Party Library
 ### andycjw/uao_decode.py
@@ -88,7 +97,7 @@ For crawling PTT website
  - akingeta1945
  - jerry7668
  - GayLord
- 
+
 以及在 Python 版上給予程式開發意見的版友們：
 
  - ckc1ark

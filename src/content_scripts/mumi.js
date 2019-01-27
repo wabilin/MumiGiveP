@@ -1,4 +1,4 @@
-const browser = require("webextension-polyfill");
+const browser = require('webextension-polyfill');
 
 const getPttIntput = () => document.getElementById('t');
 
@@ -11,22 +11,16 @@ const DEFAULT_KB_OPTS = Object.freeze({
   bubbles: true,
 });
 
-const keydownEvent = (key) => {
-  return new KeyboardEvent(
-    'keydown',
-    { ...DEFAULT_KB_OPTS, ...PTT_KEYS[key] },
-  );
-}
+const keydownEvent = key => new KeyboardEvent(
+  'keydown',
+  { ...DEFAULT_KB_OPTS, ...PTT_KEYS[key] },
+);
 
-const getBbsLines = () => {
-  return document.querySelectorAll('[data-type="bbsline"]');
-};
+const getBbsLines = () => document.querySelectorAll('[data-type="bbsline"]');
 
-const waitMs = (ms) => {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  })
-}
+const waitMs = ms => new Promise((resolve) => {
+  setTimeout(resolve, ms);
+});
 
 const waitForDocChange = async ({ timeout = 3000 } = {}) => {
   let mutated = false;
@@ -40,7 +34,7 @@ const waitForDocChange = async ({ timeout = 3000 } = {}) => {
 
   const startedAt = (new Date()).getTime();
 
-  while (true) {
+  for (;;) {
     if (mutated) {
       observer.disconnect();
       return true;
@@ -50,10 +44,11 @@ const waitForDocChange = async ({ timeout = 3000 } = {}) => {
       observer.disconnect();
       throw new Error('Wait for document mutation timeout.');
     } else {
+      // eslint-disable-next-line no-await-in-loop
       await waitMs(10);
     }
   }
-}
+};
 
 class PttController {
   constructor(input) {
@@ -73,14 +68,15 @@ class PttController {
   }
 
   async gotoMainPage() {
-    while(true) {
+    while (true) {
       const header = getBbsLines()[0].innerHTML;
       if (header.includes('【主功能表】')) {
         return true;
       }
 
       this.sendKey('ArrowLeft');
-      await waitForDocChange()
+      // eslint-disable-next-line no-await-in-loop
+      await waitForDocChange();
     }
   }
 }
@@ -89,20 +85,18 @@ class PttController {
 const pushTypes = {
   PUSH: 1,
   ARROW: 2,
-  BOO: 3
+  BOO: 3,
 };
 
 const pushType = (span) => {
-  const matchClassAndHtml = (ele, cName, html) => {
-    return ele.className === cName && ele.innerHTML === html;
-  };
+  const matchClassAndHtml = (ele, cName, html) => ele.className === cName && ele.innerHTML === html;
 
-  const isPush =  (span) => matchClassAndHtml(span, "q15 b0", "<span>推 </span>");
-  const isArrow = (span) => matchClassAndHtml(span, "q9 b0", "<span>→ </span>");
-  const isBoo =   (span) => matchClassAndHtml(span, "q9 b0", "<span>噓 </span>");
+  const isPush = span => matchClassAndHtml(span, 'q15 b0', '<span>推 </span>');
+  const isArrow = span => matchClassAndHtml(span, 'q9 b0', '<span>→ </span>');
+  const isBoo = span => matchClassAndHtml(span, 'q9 b0', '<span>噓 </span>');
   const typeDetectors = { 1: isPush, 2: isArrow, 3: isBoo };
 
-  for (let key of Object.keys(typeDetectors)) {
+  for (const key of Object.keys(typeDetectors)) {
     const detector = typeDetectors[key];
     if (detector(span)) {
       return key;
@@ -112,10 +106,8 @@ const pushType = (span) => {
   return null;
 };
 
-const pushLineFormat = (line) => {
-  return ('children' in line) && ('length' in line.children) &&
-    (line.children.length === 4);
-};
+const pushLineFormat = line => ('children' in line) && ('length' in line.children)
+    && (line.children.length === 4);
 
 const matchIdRule = (id) => {
   if (!id) {
@@ -141,8 +133,8 @@ const parsePushData = (line) => {
   }
 
   return {
-    pushType: pushType,
-    id: id
+    pushType,
+    id,
   };
 };
 
@@ -156,6 +148,6 @@ const listener = (request, sender, sendResponse) => {
 
   const ptt = new PttController(getPttIntput());
   ptt.gotoMainPage()
-  .then(() => { console.log('Main page here!') });
+    .then(() => { console.log('Main page here!'); });
 };
 browser.runtime.onMessage.addListener(listener);

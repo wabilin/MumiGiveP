@@ -1,4 +1,4 @@
-const browser = this.browser || this.chrome;
+const browser = require("webextension-polyfill");
 
 const getPttIntput = () => document.getElementById('t');
 

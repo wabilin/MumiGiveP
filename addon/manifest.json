@@ -18,7 +18,7 @@
   "content_scripts": [
     {
       "matches": ["*://term.ptt.cc/*"],
-      "js": ["content_scripts/mumi.js"]
+      "js": ["mumi.js"]
     }
   ],
 
@@ -26,7 +26,7 @@
     "default_icon": {
       "48": "icons/border-48.png"
     },
-    "default_popup": "popup/popup.html",
+    "default_popup": "popup.html",
     "default_title": "Whereami?"
   }
 }

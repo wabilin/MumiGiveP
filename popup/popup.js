@@ -1,14 +1,8 @@
+const browser = require("webextension-polyfill");
+
 document.addEventListener("click", (e) => {
   if (e.target.classList.contains("mumi")) {
-    const chosenBeast = e.target.textContent;
-
-    if (chrome) {
-      browser = chrome;
-    }
-
-    // browser.tabs.executeScript(null, {
-    //   file: "/content_scripts/mumi.js"
-    // });
+    const _content = e.target.textContent;
 
     browser.tabs.query({active: true, currentWindow: true}, (tabs) => {
       browser.tabs.sendMessage(tabs[0].id, 'Hello');

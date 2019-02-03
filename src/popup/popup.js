@@ -1,15 +1,24 @@
-const browser = require('webextension-polyfill');
+const browser = chrome;
 
 const ALLOWED_ACTIONS = ['go-main', 'get-pushs'];
 
-document.addEventListener('click', (e) => {
-  const action = e.target.name;
-  if (ALLOWED_ACTIONS.includes(action)) {
-    browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      browser.tabs.sendMessage(tabs[0].id, action);
-    });
-  } else if (e.target.classList.contains('clear')) {
+const onButtonClick = (event) => {
+  const action = event.target.name;
+  if (action === 'clear') {
     browser.tabs.reload();
     window.close();
+    return;
   }
-});
+
+  if (!ALLOWED_ACTIONS.includes(action)) {
+    return;
+  }
+
+  browser.tabs.query({
+    active: true,
+    currentWindow: true,
+  }, (activeTabs) => {
+    browser.tabs.sendMessage(activeTabs[0].id, action);
+  });
+}
+document.addEventListener('click', onButtonClick);

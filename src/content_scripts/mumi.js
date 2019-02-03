@@ -4,7 +4,7 @@ const PttController = require('./PttController');
 const getPttIntput = () => document.getElementById('t');
 
 const listener = (request, sender, sendResponse) => {
-  console.log(request);
+  console.log(`Got message: ${request}`);
   const input = getPttIntput();
   if (!input) {
     console.error('Could not get PTT input element!');

@@ -12,7 +12,8 @@
   "permissions":[
     "activeTab",
     "tabs",
-    "notifications"
+    "notifications",
+    "*://term.ptt.cc/*"
   ],
 
   "content_scripts": [

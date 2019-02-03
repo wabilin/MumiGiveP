@@ -7,7 +7,7 @@
   "author": "wabilin <twelendil@gmail.com>",
   "scripts": {
     "build": "webpack --mode=production",
-    "build-dev": "webpack --mode=development",
+    "dev": "webpack --mode=development",
     "lint": "eslint src"
   },
   "license": "GPL-3.0",

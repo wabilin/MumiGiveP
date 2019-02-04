@@ -18,6 +18,7 @@
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.15.0",
     "jest": "^24.0.0",
+    "jest-junit": "^6.2.1",
     "webpack": "^4.29.0",
     "webpack-cli": "^3.2.1"
   },

@@ -6,13 +6,13 @@ const PushType = {
   BOO: 'BOO',
 };
 
-const matchClassAndText = (ele, className, text) => (
-  ele.className === className && ele.innerText === text
+const matchClassAndHtml = (ele, className, html) => (
+  ele.className === className && ele.innerHTML === html
 );
 
-const isPush = span => matchClassAndText(span, 'q15 b0', '推 ');
-const isArrow = span => matchClassAndText(span, 'q9 b0', '→ ');
-const isBoo = span => matchClassAndText(span, 'q9 b0', '噓 ');
+const isPush = span => matchClassAndHtml(span, 'q15 b0', '推 ');
+const isArrow = span => matchClassAndHtml(span, 'q9 b0', '→ ');
+const isBoo = span => matchClassAndHtml(span, 'q9 b0', '噓 ');
 const typeDetectors = {
   [PushType.PUSH]: isPush,
   [PushType.ARROW]: isArrow,
@@ -45,7 +45,7 @@ const parsePushData = (line) => {
   if (!pushLineFormat(line)) { return null; }
 
   const type = pushType(line.children[0]);
-  const [, id, comment, timestamp] = [...line.children].map(x => x.innerText);
+  const [, id, comment, timestamp] = [...line.children].map(x => x.innerHTML);
 
   if (!type || !matchIdRule(id)) { return null; }
 
@@ -79,4 +79,4 @@ const getPushInfos = (rawLines) => {
 };
 
 
-module.exports = { getPushInfos };
+module.exports = { PushType, parsePushData, getPushInfos };

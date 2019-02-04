@@ -34,7 +34,7 @@ const waitChange = ({ timeout = 1000 } = {}) => {
 
 const dataForMatch = (element, targetType) => {
   if (targetType === 'text') {
-    return element.innerText;
+    return element.textContent;
   } if (targetType === 'html') {
     return element.innerHTML;
   }

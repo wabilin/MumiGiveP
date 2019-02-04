@@ -20,5 +20,5 @@ const onButtonClick = (event) => {
   }, (activeTabs) => {
     browser.tabs.sendMessage(activeTabs[0].id, action);
   });
-}
+};
 document.addEventListener('click', onButtonClick);

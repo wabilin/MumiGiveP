@@ -1,55 +1,82 @@
-const pushTypes = {
-  PUSH: 1,
-  ARROW: 2,
-  BOO: 3,
+const _ = require('lodash');
+
+const PushType = {
+  PUSH: 'PUSH',
+  ARROW: 'ARROW',
+  BOO: 'BOO',
+};
+
+const matchClassAndText = (ele, className, text) => (
+  ele.className === className && ele.innerText === text
+);
+
+const isPush = span => matchClassAndText(span, 'q15 b0', '推 ');
+const isArrow = span => matchClassAndText(span, 'q9 b0', '→ ');
+const isBoo = span => matchClassAndText(span, 'q9 b0', '噓 ');
+const typeDetectors = {
+  [PushType.PUSH]: isPush,
+  [PushType.ARROW]: isArrow,
+  [PushType.BOO]: isBoo,
 };
 
 const pushType = (span) => {
-  const matchClassAndHtml = (ele, cName, html) => ele.className === cName && ele.innerHTML === html;
+  const matched = Object.entries(typeDetectors)
+    .find(([, isType]) => isType(span));
 
-  const isPush = span => matchClassAndHtml(span, 'q15 b0', '<span>推 </span>');
-  const isArrow = span => matchClassAndHtml(span, 'q9 b0', '<span>→ </span>');
-  const isBoo = span => matchClassAndHtml(span, 'q9 b0', '<span>噓 </span>');
-  const typeDetectors = { 1: isPush, 2: isArrow, 3: isBoo };
-
-  for (const key of Object.keys(typeDetectors)) {
-    const detector = typeDetectors[key];
-    if (detector(span)) {
-      return key;
-    }
-  }
-
-  return null;
+  return matched ? matched[0] : null;
 };
 
-const pushLineFormat = line => ('children' in line) && ('length' in line.children)
-    && (line.children.length === 4);
+const pushLineFormat = lineSpan => (
+  lineSpan
+  && ('children' in lineSpan)
+  && ('length' in lineSpan.children)
+  && (lineSpan.children.length === 4));
 
 const matchIdRule = (id) => {
   if (!id) {
     return false;
   }
-  const re = /^[A-z][A-z0-9]{3,}$/;
+
+  const re = /^[A-Za-z][A-Za-z0-9]{3,}$/;
   return re.test(id);
 };
 
 const parsePushData = (line) => {
-  if (!pushLineFormat(line)) {
-    return null;
-  }
+  if (!pushLineFormat(line)) { return null; }
 
-  const head_span = line.children[0];
-  const type = pushType(head_span);
+  const type = pushType(line.children[0]);
+  const [, id, comment, timestamp] = [...line.children].map(x => x.innerText);
 
-  const idSpan = line.children[1];
-  const id = idSpan && idSpan.children[0] && idSpan.children[0].innerHTML;
-
-  if (!type || !matchIdRule(id)) {
-    return null;
-  }
+  if (!type || !matchIdRule(id)) { return null; }
 
   return {
-    pushType,
+    type,
     id,
+    comment,
+    timestamp,
+    raw: line.innerHTML,
   };
 };
+
+const filterLinesUnderArticle = (lines) => {
+  const articleEndIndex = lines.findIndex(line => (
+    line.innerHTML.includes('<span class="q2 b0">※ 文章網址: </span>')
+  ));
+
+  if (!articleEndIndex) {
+    throw new Error('Line "文章網址" not found.');
+  }
+
+  return lines.slice(articleEndIndex);
+};
+
+const getPushInfos = (rawLines) => {
+  const linesUnderArticle = filterLinesUnderArticle(rawLines);
+  const innerSpans = linesUnderArticle.map(raw => raw.children && raw.children[0]);
+  const pushInfos = innerSpans.map(parsePushData).filter(x => x);
+  const uniqPushInfos = _.uniqBy(pushInfos, info => info.raw);
+  return uniqPushInfos;
+};
+
+
+module.exports = { getPushInfos };

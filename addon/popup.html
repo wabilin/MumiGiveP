@@ -3,14 +3,103 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="libs/bootstrap.min.css">
+    <link rel="stylesheet" href="popup.css">
   </head>
 
   <body>
-    <button name="go-main">Go Main</button>
-    <button name="go-store">Go Store</button>
-    <button name="get-pushs">Get Pushs</button>
-    <button name="give-p">Give P</button>
+    <div id="container" class="container">
+      <div id="mumi-ing-div" style='display: none;'>
+        姆咪正在發放 P 幣...
+      </div>
+      <form id="mumiForm">
+        <div class="form-group row">
+          <label for="pttPassword" class="col-3 col-form-label">PTT 密碼</label>
+          <div class="col-9">
+            <input id="pttPassword" name="pttPassword" class="form-control"
+                   required
+                   type="password" placeholder="請輸入 PTT 的密碼" />
+          </div>
+        </div>
 
-  <script src="popup.js"></script>
+        <div class="form-group row">
+          <div class="col-3">
+            <label for="amount">發送數量</label>
+          </div>
+          <div class="col-9">
+            <input id="sendAmount" name="sendAmount" class="form-control"
+                   type="number" value="10" />
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <div class="col-3">
+            <label for="moneyBeforeTax">每筆税前金額</label>
+          </div>
+          <div class="col-9">
+            <input id="moneyBeforeTax" name="moneyBeforeTax" class="form-control"
+                   type="number" value="10" min="2" />
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <div class="col-auto">
+            <label for="nFloors">每</label>
+          </div>
+          <div class="col-auto">
+            <input id="nFloors" name="nFloors" class="form-control"
+                   type="number" value="1" min="1" />
+          </div>
+          <div class="col-auto">樓發一次</div>
+        </div>
+
+        <div class="form-group row">
+          <div class="col-3">
+            只發給
+          </div>
+          <div class="col-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox"
+                     id="pushBox" name="push" checked>
+              <label class="form-check-label" for="pushBox">推</label>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox"
+                     id="booBox" name="boo">
+              <label class="form-check-label" for="booBox">噓</label>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox"
+                     id="arrowBox" name="arrow">
+              <label class="form-check-label" for="arrowBox">→</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <div class="col-10">
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary">確定</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <!-- <button name="go-main" class="btn">Go Main</button> -->
+    <!-- <button name="go-store">Go Store</button> -->
+    <!-- <button name="get-pushs">Get Pushs</button> -->
+    <!-- <button name="give-p">Give P</button> -->
+    <style>
+     #container {
+       min-width: 576px;
+       margin-top: 18px;
+       margin-bottom: 18px;
+     };
+    </style>
+    <script src="popup.js"></script>
   </body>
 </html>

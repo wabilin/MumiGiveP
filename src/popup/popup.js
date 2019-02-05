@@ -21,4 +21,20 @@ const onButtonClick = (event) => {
     browser.tabs.sendMessage(activeTabs[0].id, action);
   });
 };
+
+const form = document.getElementById('mumiForm');
+const muming = document.getElementById('mumi-ing-div');
+form.onsubmit = (event) => {
+  event.preventDefault();
+
+  form.style.display = 'none';
+  muming.style.display = 'block';
+  setTimeout(() => {
+    form.style.display = 'block';
+    muming.style.display = 'none';
+  }, 3000);
+
+  return false;
+};
+
 document.addEventListener('click', onButtonClick);

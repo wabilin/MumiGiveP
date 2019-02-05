@@ -4,7 +4,8 @@ const Command = require('./Command');
 
 const getPttIntput = () => document.getElementById('t');
 
-const listener = async (request, sender, sendResponse) => {
+// const listener = async (request, sender, sendResponse)
+const listener = async (request) => {
   console.log(`Got message: ${request}`);
   const input = getPttIntput();
   if (!input) {
@@ -21,6 +22,9 @@ const listener = async (request, sender, sendResponse) => {
     } else if (request === 'get-pushs') {
       await ptt.parsePushs();
       console.log('Parse Push!');
+    } else if (request === 'go-store') {
+      await ptt.gotoPttStore();
+      console.log('Go to store!');
     }
   } catch (error) {
     console.console.error(error);

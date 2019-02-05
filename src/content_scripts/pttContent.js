@@ -32,6 +32,23 @@ const waitChange = ({ timeout = 1000 } = {}) => {
   });
 };
 
+const waitTil = (isDone, { timeout = 3000 } = {}) => {
+  const startedAt = currentTime();
+
+  const recWait = async () => {
+    if (isDone()) { return true; }
+
+    if (currentTime() - startedAt > timeout) {
+      throw new Error('Timeout');
+    }
+
+    await waitChange();
+    return recWait();
+  };
+
+  return recWait();
+};
+
 const dataForMatch = (element, targetType) => {
   if (targetType === 'text') {
     return element.textContent;
@@ -109,6 +126,7 @@ module.exports = {
   getConentDiv,
   getBbsLines,
   waitChange,
+  waitTil,
   matches,
   repeatTillMatch,
 };

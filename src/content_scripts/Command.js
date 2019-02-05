@@ -7,12 +7,10 @@ class Command {
   }
 
   gotoMainPage() {
-    const { controller } = this;
-
     return pttContent.repeatTillMatch(
       { row: 0 },
       { target: 'text', includes: '【主功能表】' },
-      () => { controller.sendKey('ArrowLeft'); },
+      () => { this.sendKey('ArrowLeft'); },
     );
   }
 
@@ -50,11 +48,54 @@ class Command {
       if (isEnd) { break; }
 
       controller.sendKey('PageDown');
+      // eslint-disable-next-line no-await-in-loop
       await pttContent.waitChange();
     }
 
     return pushParser.getPushInfos(collectedLines);
   }
+
+  async gotoPttStore() {
+    const isInPttStore = pttContent.matches(
+      { row: 0 }, { target: 'text', includes: '【Ｐtt量販店】' },
+    );
+
+    if (isInPttStore) { return true; }
+
+    await this.gotoMainPage();
+
+    await this.mainToPlayground();
+
+    return this.playgroundToStore();
+  }
+
+  async mainToPlayground() {
+    this.sendText('P');
+    this.sendKey('Enter');
+    await pttContent.waitTil(() => (
+      pttContent.matches(
+        { row: 0 }, { target: 'text', includes: '【網路遊樂場】' },
+      )
+    ));
+  }
+
+  async playgroundToStore() {
+    this.sendText('P');
+    this.sendKey('Enter');
+    await pttContent.waitTil(() => (
+      pttContent.matches(
+        { row: 0 }, { target: 'text', includes: '【Ｐtt量販店】' },
+      )
+    ));
+  }
+
+  async giveMoneyTo() {
+    return this.gotoPttStore();
+  }
+
+  sendText(...args) { return this.controller.sendText(...args); }
+
+  sendKey(...args) { return this.controller.sendKey(...args); }
 }
 
 module.exports = Command;

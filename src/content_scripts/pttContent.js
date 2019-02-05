@@ -66,7 +66,10 @@ const elementMatch = (element, options) => {
 
   if (func) { return func(data); }
   if (includes) { return data.includes(includes); }
-  if (regex) { return regex.test(data); }
+  if (regex) {
+    const ok = regex.test(data);
+    return ok;
+  }
 
   throw new Error('Unknown option');
 };
@@ -122,6 +125,16 @@ const repeatTillMatch = (scope, matchOptions, callback, options = {}) => {
   });
 };
 
+const isInArticle = () => matches(
+  { row: 23 }, { target: 'text', regex: /瀏覽\s*第\s*\d+\/\d+\s*頁/ },
+);
+
+const isPushsEnd = () => matches({ row: 23 }, {
+  target: 'text',
+  includes: '(100%)',
+});
+
+
 module.exports = {
   getConentDiv,
   getBbsLines,
@@ -129,4 +142,6 @@ module.exports = {
   waitTil,
   matches,
   repeatTillMatch,
+  isInArticle,
+  isPushsEnd,
 };

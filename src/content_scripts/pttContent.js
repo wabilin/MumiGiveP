@@ -42,7 +42,7 @@ const waitTil = (isDone, { timeout = 3000 } = {}) => {
       throw new Error('Timeout');
     }
 
-    await waitChange();
+    await waitChange({ timeout });
     return recWait();
   };
 
@@ -125,15 +125,6 @@ const repeatTillMatch = (scope, matchOptions, callback, options = {}) => {
   });
 };
 
-const isInArticle = () => matches(
-  { row: 23 }, { target: 'text', regex: /瀏覽\s*第\s*\d+\/\d+\s*頁/ },
-);
-
-const isPushsEnd = () => matches({ row: 23 }, {
-  target: 'text',
-  includes: '(100%)',
-});
-
 
 module.exports = {
   getConentDiv,
@@ -142,6 +133,4 @@ module.exports = {
   waitTil,
   matches,
   repeatTillMatch,
-  isInArticle,
-  isPushsEnd,
 };

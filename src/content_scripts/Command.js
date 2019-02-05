@@ -1,5 +1,6 @@
 const pttContent = require('./pttContent');
 const pushParser = require('./pushParser');
+const situation = require('./situation');
 
 class Command {
   constructor(controller) {
@@ -17,7 +18,7 @@ class Command {
   }
 
   async parsePushs() {
-    if (!pttContent.isInArticle()) {
+    if (!situation.isInArticle()) {
       throw new Error('Not in an article');
     }
 
@@ -30,11 +31,7 @@ class Command {
   }
 
   async gotoPttStore() {
-    const isInPttStore = pttContent.matches(
-      { row: 0 }, { target: 'text', includes: '【Ｐtt量販店】' },
-    );
-
-    if (isInPttStore) { return true; }
+    if (situation.isInPttStore()) { return true; }
 
     await this.gotoMainPage();
 
@@ -43,8 +40,58 @@ class Command {
     return this.fromPlaygroundToStore();
   }
 
-  async giveMoneyTo() {
-    return this.gotoPttStore();
+  async giveMoneyTo(id, amount, password) {
+    await this.gotoPttStore();
+
+    this.sendText('0');
+    this.sendKey('Enter');
+
+    await pttContent.waitTil(() => pttContent.matches(
+      { row: 0 }, { target: 'text', includes: '【 給予Ptt幣 】' },
+    ));
+
+
+    this.sendText(id);
+    this.sendKey('Enter');
+
+    await pttContent.waitTil(() => pttContent.matches(
+      { row: 3 }, { target: 'text', includes: '請輸入金額' },
+    ));
+
+    this.sendText(String(amount));
+    this.sendKey('Enter');
+
+    await pttContent.waitTil(() => situation.isAskingPassword()
+      || situation.isConfirmingTransaction());
+
+    if (situation.isAskingPassword()) {
+      this.sendText(password);
+      this.sendKey('Enter');
+    }
+
+    await pttContent.waitTil(() => (
+      situation.isInvalidPassword()
+      || situation.isConfirmingTransaction()
+    ), { timeout: 10000 });
+
+    if (situation.isInvalidPassword()) {
+      throw new Error('Invalid Password');
+    } else {
+      // 'y' for 確定進行交易嗎？
+      this.sendText('y');
+      this.sendKey('Enter');
+    }
+
+    await pttContent.waitTil(
+      () => situation.isAskingEditRedEnvelope(),
+      { timeout: 10000 },
+    );
+    this.sendText('n');
+    this.sendKey('Enter');
+
+    await pttContent.waitTil(() => situation.isTransactionFinished());
+
+    return true;
   }
 
   // ---- global commands end ----
@@ -72,7 +119,7 @@ class Command {
 
       const allLines = [...collectedLines, ...currentLines];
 
-      if (pttContent.isPushsEnd) {
+      if (situation.isPushsEnd) {
         return allLines;
       }
       this.sendKey('PageDown');

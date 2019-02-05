@@ -1,6 +1,6 @@
 const browser = chrome;
 
-const ALLOWED_ACTIONS = ['go-main', 'get-pushs', 'go-store'];
+const ALLOWED_ACTIONS = ['go-main', 'get-pushs', 'go-store', 'give-p'];
 
 const onButtonClick = (event) => {
   const action = event.target.name;

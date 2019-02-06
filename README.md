@@ -4,9 +4,19 @@
 
 可以在 PTT 上自動發P幣，簡單好用。
 
-支援 Windows, MacOs 和 Linux 系統。
+支援 FireFox & Chrome
 
-**DEMO** : [Youtube](https://youtu.be/kCIcbG_cX0U)
+
+## Download and Installation
+Coming soon...
+
+## Usage
+
+1. 安裝
+1. 前往 https://term.ptt.cc 並登入。
+1. 操作 PTT 前往您想要發前的文章。
+1. 點擊本 Add-on 的 icon，就可以輕鬆發錢囉。
+
 
 ## Build
 
@@ -17,16 +27,18 @@ yarn build
 
 Development Build
 ```
-yarn build-dev
+yarn dev
 ```
 
 使用 addon 資料夾中的內容載入 FireFox / Chrome Addon 除錯模式
 
-## Download and Installation
-Coming soon...
 
+# 桌面版 MumiGiveP （停止維護 / No longer supported）
 
-# 桌面版 MumiGiveP （停止維護）
+支援 Windows, MacOs 和 Linux 系統。
+
+**DEMO** : [Youtube](https://youtu.be/kCIcbG_cX0U)
+
 ## Download and Installation
 ### Binary
 Windows 及 MacOS 使用者可從以下位置直接下載執行檔：

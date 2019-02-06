@@ -1,6 +1,8 @@
 # MumiGiveP
 
-姆咪姆咪發錢錢。
+[![CircleCI](https://circleci.com/gh/wabilin/MumiGiveP.svg?style=svg)](https://circleci.com/gh/wabilin/MumiGiveP)
+
+> 姆咪姆咪發錢錢。
 
 可以在 PTT 上自動發P幣，簡單好用。
 

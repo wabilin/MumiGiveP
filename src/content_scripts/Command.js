@@ -9,6 +9,13 @@ class Command {
 
   // ---- global commands ----
 
+  async mumiGiveP() {
+    const pushInfos = await this.parsePushs()
+
+    console.log(pushInfos)
+    console.log(JSON.stringify(pushInfos))
+  }
+
   gotoMainPage() {
     return pttContent.repeatTillMatch(
       { row: 0 },
@@ -119,7 +126,7 @@ class Command {
 
       const allLines = [...collectedLines, ...currentLines];
 
-      if (situation.isPushsEnd) {
+      if (situation.isPushsEnd()) {
         return allLines;
       }
       this.sendKey('PageDown');

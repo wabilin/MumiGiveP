@@ -12,11 +12,14 @@ const listener = async (request) => {
     console.error('Could not get PTT input element!');
     return;
   }
-  const controller = new PttController(getPttIntput());
+  const controller = new PttController(input);
   const ptt = new Command(controller);
 
   try {
-    if (request === 'go-main') {
+    if (request instanceof FormData) {
+      ptt.mumiGiveP(request);
+      console.log('Use FormData!');
+    } else if (request === 'go-main') {
       await ptt.gotoMainPage();
       console.log('Main page here!');
     } else if (request === 'get-pushs') {
@@ -33,4 +36,9 @@ const listener = async (request) => {
     console.console.error(error);
   }
 };
-browser.runtime.onMessage.addListener(listener);
+
+browser.runtime.onMessage.addListener(listener)
+// browser.runtime.onMessage.addListener(request => {
+//   console.log("Got message from popup");
+//   return Promise.resolve("Hi from content script");
+// });

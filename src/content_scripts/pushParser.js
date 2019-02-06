@@ -30,7 +30,7 @@ const pushLineFormat = lineSpan => (
   lineSpan
   && ('children' in lineSpan)
   && ('length' in lineSpan.children)
-  && (lineSpan.children.length === 4));
+  && (lineSpan.children.length >= 3));
 
 const matchIdRule = (id) => {
   if (!id) {

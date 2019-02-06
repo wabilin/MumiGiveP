@@ -6,11 +6,13 @@
 
 可以在 PTT 上自動發P幣，簡單好用。
 
-支援 FireFox & Chrome
+支援 FireFox & Chrome，有瀏覽器就能輕鬆發錢！
 
+## Demo
+Coming soon.
 
 ## Download and Installation
-Coming soon...
+Coming soon.
 
 ## Usage
 
@@ -35,13 +37,13 @@ yarn dev
 使用 addon 資料夾中的內容載入 FireFox / Chrome Addon 除錯模式
 
 ## TODO
-1. 過濾自己
-1. 保存設定
-1. 稅前稅後
-1. 推文內容條件
-1. Better LOGO
-1. 修改紅包
-1. 抽獎
+1. [ ] 過濾自己
+1. [ ] 保存設定
+1. [ ] 稅前稅後
+1. [ ] 推文內容條件
+1. [ ] Better LOGO
+1. [ ] 修改紅包
+1. [ ] 抽獎
 
 ### Not to do
 1. 贊助作者

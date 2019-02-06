@@ -46,7 +46,7 @@ class Command {
 
   async parsePushs() {
     if (!situation.isInArticle()) {
-      throw new Error('Not in an article');
+      throw new Error('不在文章頁面中，無法取得推文清單。');
     }
 
     await this.inArticleGotoPageBeginning();
@@ -108,7 +108,7 @@ class Command {
       ), { timeout: 10000 });
 
       if (situation.isInvalidPassword()) {
-        throw new Error('Invalid Password');
+        throw new Error('密碼錯誤，請輸入正確的 PTT 密碼後重試。');
       }
     } else {
       // 'y' for 確定進行交易嗎？

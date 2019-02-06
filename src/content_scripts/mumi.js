@@ -17,8 +17,14 @@ const listener = async (request) => {
 
   try {
     if (request instanceof FormData) {
-      ptt.mumiGiveP(request);
       console.log('Use FormData!');
+      const res = await ptt.mumiGiveP(request);
+      if (res.success) {
+        alert(`ID sent: ${res.ids.join(', ')}`)
+      } else {
+        throw new Error('Unknown fail')
+      }
+
     } else if (request === 'go-main') {
       await ptt.gotoMainPage();
       console.log('Main page here!');

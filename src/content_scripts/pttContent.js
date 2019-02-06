@@ -32,6 +32,11 @@ const waitChange = ({ timeout = 1000 } = {}) => {
   });
 };
 
+/**
+ * @param {Function} isDone
+ * @param {Object} options
+ * @param {number} options.timeout
+ */
 const waitTil = (isDone, { timeout = 3000 } = {}) => {
   const startedAt = currentTime();
 
@@ -49,6 +54,10 @@ const waitTil = (isDone, { timeout = 3000 } = {}) => {
   return recWait();
 };
 
+/**
+ * @param {Object} element - A DOM element
+ * @param {string} targetType - 'text', 'html' or 'raw'
+ */
 const dataForMatch = (element, targetType) => {
   if (targetType === 'text') {
     return element.textContent;
@@ -74,6 +83,10 @@ const elementMatch = (element, options) => {
   throw new Error('Unknown option');
 };
 
+/**
+ * @param {number | string} rowIndex - 'any' or number in 0..23
+ * @param {Object} options
+**/
 const rowMatch = (rowIndex, options) => {
   const rows = getBbsLines();
   if (rowIndex === 'any') {

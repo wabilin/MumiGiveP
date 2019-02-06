@@ -9,11 +9,13 @@
 
 支援 FireFox & Chrome，有瀏覽器就能輕鬆發錢！
 
+[![Download on Firefox Add-ons](images/amo-button.png?raw=true)](https://addons.mozilla.org/zh-TW/firefox/addon/mumigivep/)
+
 ## Demo
 Coming soon.
 
 ## Download and Installation
-Coming soon.
+Chrome version coming soon.
 
 ## Usage
 

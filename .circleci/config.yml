@@ -20,6 +20,9 @@ jobs:
           command: yarn test --ci --runInBand --reporters=default --reporters=jest-junit
           environment:
             JEST_JUNIT_OUTPUT: "/tmp/reports/js-test-results.xml"
+      - run:
+          name: build
+          command: yarn build
       - store_artifacts:
           path: /tmp/reports
       - store_test_results:

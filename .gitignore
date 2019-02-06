@@ -1,8 +1,4 @@
-.idea
-*.pyc
-private_test.py
-log.txt
 .DS_Store
-build
-dist
-*.spec
+*.log
+.tern-project
+node_modules

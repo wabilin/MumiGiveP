@@ -4,10 +4,40 @@
 
 可以在 PTT 上自動發P幣，簡單好用。
 
+支援 FireFox & Chrome
+
+
+## Download and Installation
+Coming soon...
+
+## Usage
+
+1. 安裝
+1. 前往 https://term.ptt.cc 並登入。
+1. 操作 PTT 前往您想要發前的文章。
+1. 點擊本 Add-on 的 icon，就可以輕鬆發錢囉。
+
+
+## Build
+
+Production Build
+```
+yarn build
+```
+
+Development Build
+```
+yarn dev
+```
+
+使用 addon 資料夾中的內容載入 FireFox / Chrome Addon 除錯模式
+
+
+# 桌面版 MumiGiveP （停止維護 / No longer supported）
+
 支援 Windows, MacOs 和 Linux 系統。
 
 **DEMO** : [Youtube](https://youtu.be/kCIcbG_cX0U)
-
 
 ## Download and Installation
 ### Binary
@@ -39,15 +69,6 @@ then run
 ```
 python mumi.py
 ```
-
-## License
-
-[GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)
-
-簡單講，您可以自由的使用、修改及散佈本程式。
-
-但必須同時附帶程式原始碼並使用GPL條款授權。
-
 
 ## 3rd Party Library
 ### andycjw/uao_decode.py
@@ -88,7 +109,7 @@ For crawling PTT website
  - akingeta1945
  - jerry7668
  - GayLord
- 
+
 以及在 Python 版上給予程式開發意見的版友們：
 
  - ckc1ark

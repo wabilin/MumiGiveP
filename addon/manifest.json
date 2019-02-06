@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "name": "MumiGiveP",
+  "version": "3.0",
+
+  "description": "A PTT money sending bot.",
+
+  "icons": {
+    "128": "icons/mumi-128.png",
+    "48": "icons/mumi-48.png"
+  },
+
+  "permissions":[
+    "activeTab",
+    "tabs",
+    "notifications",
+    "*://term.ptt.cc/*"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["*://term.ptt.cc/*"],
+      "js": ["mumi.js"]
+    }
+  ],
+
+  "browser_action": {
+    "default_icon": {
+      "128": "icons/mumi-128.png",
+      "48": "icons/mumi-48.png"
+    },
+    "default_popup": "popup.html",
+    "default_title": "Whereami?"
+  }
+}

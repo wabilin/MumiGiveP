@@ -1,7 +1,7 @@
 const pttContent = require('./pttContent');
 const pushParser = require('./pushParser');
 const situation = require('./situation');
-const pushUserFilter = require('./pushUserFilter')
+const pushUserFilter = require('./pushUserFilter');
 
 class Command {
   constructor(controller) {
@@ -11,24 +11,26 @@ class Command {
   // ---- global commands ----
 
   async mumiGiveP(settings) {
-    const pushInfos = await this.parsePushs()
-    const ids = pushUserFilter(pushInfos, settings)
-    const password = settings.get('pttPassword')
-    const moneyBeforeTax = Number(settings.get('moneyBeforeTax'))
+    const pushInfos = await this.parsePushs();
+    const ids = pushUserFilter(pushInfos, settings);
+    const password = settings.get('pttPassword');
+    const moneyBeforeTax = Number(settings.get('moneyBeforeTax'));
 
-    if(!(ids && password && moneyBeforeTax)) {
-      throw new Error('Missing required args to #mumiGiveP.')
+    if (!(ids && password && moneyBeforeTax)) {
+      throw new Error('Missing required args to #mumiGiveP.');
     }
 
-    for (const id of ids) {
-      await this.giveMoneyTo(id, moneyBeforeTax, password)
+    for (let i = 0; i < ids.length; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await this.giveMoneyTo(ids[i], moneyBeforeTax, password);
     }
 
     return {
       ids,
       success: true,
-    }
+    };
   }
+
 
   gotoMainPage() {
     return pttContent.repeatTillMatch(
@@ -76,12 +78,12 @@ class Command {
     this.sendKey('Enter');
 
     await pttContent.waitTil(() => (
-      situation.isAskingMoneyAmount() ||
-        situation.isTransactionCanceled()
+      situation.isAskingMoneyAmount()
+        || situation.isTransactionCanceled()
     ));
 
     if (situation.isTransactionCanceled()) {
-      throw new Error('Transaction is canceled. (Incorrect ID)')
+      throw new Error('Transaction is canceled. (Incorrect ID)');
     }
 
     this.sendText(String(amount));
@@ -120,7 +122,7 @@ class Command {
     await pttContent.waitTil(situation.isTransactionFinished);
 
     this.sendKey('Enter');
-    await pttContent.waitTil(situation.isInPttStore)
+    await pttContent.waitTil(situation.isInPttStore);
 
     return true;
   }

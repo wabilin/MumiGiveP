@@ -26,17 +26,17 @@ const pushType = (span) => {
   return matched ? matched[0] : null;
 };
 
-const pushLineFormat = line => {
-  const { children } = line
+const pushLineFormat = (line) => {
+  const { children } = line;
   if (!(children && children.length && children.length >= 1)) {
-    return null
+    return null;
   }
 
   const idSpan = children[0];
-  return idSpan &&
-    ('children' in idSpan) &&
-    ('length' in idSpan.children) &&
-    (idSpan.children.length >= 3);
+  return idSpan
+    && ('children' in idSpan)
+    && ('length' in idSpan.children)
+    && (idSpan.children.length >= 3);
 };
 
 const matchIdRule = (id) => {

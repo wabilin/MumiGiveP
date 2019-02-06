@@ -1,47 +1,46 @@
-const _ = require('lodash')
-const { PushType } = require('./pushParser.js')
+const _ = require('lodash');
+const { PushType } = require('./pushParser.js');
 
 /**
  * @param { Array } pushInfos
  * @param { Object } settings
-**/
+* */
 function pushUserFilter(pushInfos, settings) {
-  const filterAmount = (pushInfos) => {
-    const sendAmount = Number(settings.get('sendAmount'))
-    if (!sendAmount) { throw new Error('Amount not valid') }
+  const filterAmount = (pushs) => {
+    const sendAmount = Number(settings.get('sendAmount'));
+    if (!sendAmount) { throw new Error('Amount not valid'); }
 
-    return pushInfos.slice(0, sendAmount);
-  }
+    return pushs.slice(0, sendAmount);
+  };
 
-  const filterNFloors = (pushInfos) => {
-    const n = Number(settings.get('nFloors'))
-    if (!n) { throw new Error('nFloors not valid') }
+  const filterNFloors = (pushs) => {
+    const n = Number(settings.get('nFloors'));
+    if (!n) { throw new Error('nFloors not valid'); }
 
-    return pushInfos.filter((x, i) => i % n === 0)
-  }
+    return pushs.filter((x, i) => i % n === 0);
+  };
 
-  const filterPushTypes = (pushInfos) => {
+  const filterPushTypes = (pushs) => {
     const allowedTypes = {
       [PushType.PUSH]: settings.get('push'),
       [PushType.BOO]: settings.get('boo'),
       [PushType.ARROW]: settings.get('arrow'),
-    }
+    };
 
-    return pushInfos.filter(x => allowedTypes[x.type])
-  }
+    return pushs.filter(x => allowedTypes[x.type]);
+  };
 
-  const filterUniqIds = (pushInfos) => {
+  const filterUniqIds = (pushs) => {
     if (settings.get('uniqUserId')) {
-      return _.uniqBy(pushInfos, info => info.id)
-    } else {
-      return pushInfos;
+      return _.uniqBy(pushs, info => info.id);
     }
-  }
+    return pushs;
+  };
 
   let filtered = filterPushTypes(pushInfos);
-  filtered = filterUniqIds(filtered)
-  filtered = filterNFloors(filtered)
-  return filterAmount(filtered).map(x => x.id)
-};
+  filtered = filterUniqIds(filtered);
+  filtered = filterNFloors(filtered);
+  return filterAmount(filtered).map(x => x.id);
+}
 
 module.exports = pushUserFilter;

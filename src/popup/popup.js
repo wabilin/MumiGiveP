@@ -1,4 +1,4 @@
-const browser = require("webextension-polyfill");;
+const browser = require('webextension-polyfill');
 
 class NoPttTabError extends Error {
   constructor(...args) {
@@ -7,23 +7,23 @@ class NoPttTabError extends Error {
   }
 }
 
-const hideElement = (e) => e.style.display = 'nono';
-const showElement = (e) => e.style.display = 'block';
+const hideElement = (e) => { e.style.display = 'nono'; };
+const showElement = (e) => { e.style.display = 'block'; };
 const hideMessages = () => {
-  hideElement(document.getElementById('successMsg'))
-  hideElement(document.getElementById('errorMsg'))
-}
+  hideElement(document.getElementById('successMsg'));
+  hideElement(document.getElementById('errorMsg'));
+};
 const showSuccess = (text) => {
-  const success = document.getElementById('successMsg')
+  const success = document.getElementById('successMsg');
   success.innerHTML = text;
-  showElement(success)
-}
+  showElement(success);
+};
 
 const showError = (text) => {
-  const error = document.getElementById('successMsg')
+  const error = document.getElementById('successMsg');
   error.innerHTML = text;
-  showElement(error)
-}
+  showElement(error);
+};
 
 const sendMessageToCurrentTab = async (message) => {
   const activeTabs = await browser.tabs.query({
@@ -39,36 +39,42 @@ const sendMessageToCurrentTab = async (message) => {
   return browser.tabs.sendMessage(activeTabs[0].id, message);
 };
 
-const form = document.getElementById('mumiForm');
-const muming = document.getElementById('mumi-ing-div');
-
 const sendFormToContent = (form) => {
   const data = new FormData(form);
-  return sendMessageToCurrentTab(data)
-}
+  return sendMessageToCurrentTab(data);
+};
+
+const form = document.getElementById('mumiForm');
+const muming = document.getElementById('mumi-ing-div');
 
 form.onsubmit = (event) => {
   event.preventDefault();
 
-  hideElement(form)
-  showElement(muming)
+  hideElement(form);
+  showElement(muming);
   hideMessages();
 
   sendFormToContent(event.target)
-    .then(response => {
+    .then((response) => {
       form.style.display = 'block';
       muming.style.display = 'none';
-      hideElement(muming)
-      showElement(form)
-      showSuccess(response.id)
-    })
-    .catch(e => {
-      if (e.name === 'NoPttTabError') {
-        muming.innerHTML = 'PTT tab not found'
+      hideElement(muming);
+      showElement(form);
+
+      const { success, ids, error } = response;
+      if (success) {
+        showSuccess(ids.join(', '));
       } else {
-        showError(e.message)
+        showError(error.message);
       }
     })
+    .catch((e) => {
+      if (e.name === 'NoPttTabError') {
+        showError('PTT tab not found');
+      } else {
+        showError(e.message);
+      }
+    });
 
   return false;
 };

@@ -1,7 +1,5 @@
 const browser = require("webextension-polyfill");;
 
-const ALLOWED_ACTIONS = ['go-main', 'get-pushs', 'go-store', 'give-p'];
-
 class NoPttTabError extends Error {
   constructor(...args) {
     super(...args);
@@ -9,49 +7,37 @@ class NoPttTabError extends Error {
   }
 }
 
+const hideElement = (e) => e.style.display = 'nono';
+const showElement = (e) => e.style.display = 'block';
+const hideMessages = () => {
+  hideElement(document.getElementById('successMsg'))
+  hideElement(document.getElementById('errorMsg'))
+}
+const showSuccess = (text) => {
+  const success = document.getElementById('successMsg')
+  success.innerHTML = text;
+  showElement(success)
+}
+
+const showError = (text) => {
+  const error = document.getElementById('successMsg')
+  error.innerHTML = text;
+  showElement(error)
+}
+
 const sendMessageToCurrentTab = async (message) => {
-  const log = document.getElementById('logDiv');
   const activeTabs = await browser.tabs.query({
     active: true,
     currentWindow: true,
     url: 'https://term.ptt.cc/',
   });
 
-  log.innerHTML += `type: ${ typeof activeTabs } <br>`
-  log.innerHTML += `type: ${ activeTabs.length } <br>`
-
   if (activeTabs.length === 0) {
     throw new NoPttTabError();
   }
 
-  log.innerHTML += `Sending to tab: ${ activeTabs[0].id } <br>`
-
   return browser.tabs.sendMessage(activeTabs[0].id, message);
 };
-
-const onButtonClick = (event) => {
-  const button = event.target
-
-  const action = button.name;
-
-  if (action === 'clear') {
-    browser.tabs.reload();
-    window.close();
-    return true;
-  }
-
-  if (!ALLOWED_ACTIONS.includes(action)) {
-    return true;
-  }
-
-  sendMessageToCurrentTab(action).catch(e => {
-    alert(e.message)
-  })
-
-  return false;
-};
-
-document.addEventListener('click', onButtonClick);
 
 const form = document.getElementById('mumiForm');
 const muming = document.getElementById('mumi-ing-div');
@@ -64,26 +50,25 @@ const sendFormToContent = (form) => {
 form.onsubmit = (event) => {
   event.preventDefault();
 
-  form.style.display = 'none';
-  muming.style.display = 'block';
+  hideElement(form)
+  showElement(muming)
+  hideMessages();
 
-  setTimeout(async () => {
-    try {
-      const response = await sendFormToContent(event.target)
-      muming.innerHTML = response;
-    } catch (e) {
+  sendFormToContent(event.target)
+    .then(response => {
+      form.style.display = 'block';
+      muming.style.display = 'none';
+      hideElement(muming)
+      showElement(form)
+      showSuccess(response.id)
+    })
+    .catch(e => {
       if (e.name === 'NoPttTabError') {
         muming.innerHTML = 'PTT tab not found'
       } else {
-        alert(e.message)
+        showError(e.message)
       }
-    }
-  }, 100);
-
-  setTimeout(() => {
-    form.style.display = 'block';
-    muming.style.display = 'none';
-  }, 3000);
+    })
 
   return false;
 };

@@ -15,11 +15,18 @@
       <div class="d-flex flex justify-content-center">
         <p class="text-muted small">姆咪...</p>
       </div>
-      <div id="logDiv">
+
+      <div id="errorMsg" class="alert alert-danger"
+           role="alert" style="display:none;">
       </div>
-      <div id="mumi-ing-div" style='display: none;'>
+      <div id="successMsg" class="alert alert-success"
+           role="alert" style="display:none;">
+      </div>
+
+      <div id="mumi-ing-div" class="alert alert-secondary" style='display: none;'>
         姆咪正在發放 P 幣...
       </div>
+
       <form id="mumiForm">
         <div class="form-group row">
           <label for="pttPassword" class="col-3 col-form-label">
@@ -108,11 +115,6 @@
         </div>
       </form>
     </div>
-
-    <button class="btn" name="go-main">Go Main</button>
-    <button class="btn" name="go-store">Go Store</button>
-    <button class="btn" name="get-pushs">Get Pushs</button>
-    <button class="btn" name="give-p">Give P</button>
 
     <style>
      #container {

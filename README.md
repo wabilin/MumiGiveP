@@ -40,6 +40,7 @@ yarn dev
 ```
 
 The built package could be found at: `addon/`
+
 使用 addon 資料夾中的內容載入 FireFox / Chrome Addon 除錯模式
 
 ## TODO

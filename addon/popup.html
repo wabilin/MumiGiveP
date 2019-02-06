@@ -29,11 +29,11 @@
 
       <form id="mumiForm">
         <div class="form-group row">
-          <label for="pttPassword" class="col-3 col-form-label">
+          <label for="pttPassword" class="col-4 col-form-label">
             PTT 密碼
             <small class="text-danger">*</small>
           </label>
-          <div class="col-9">
+          <div class="col-auto">
             <input id="pttPassword" name="pttPassword" class="form-control"
                    required
                    type="password" placeholder="請輸入 PTT 的密碼" />
@@ -41,22 +41,32 @@
         </div>
 
         <div class="form-group row">
-          <div class="col-3">
+          <div class="col-4">
             <label for="sendAmount">發送數量</label>
           </div>
-          <div class="col-9">
+          <div class="col-auto">
             <input id="sendAmount" name="sendAmount" class="form-control"
                    type="number" value="10" />
           </div>
         </div>
 
         <div class="form-group row">
-          <div class="col-3">
+          <div class="col-4">
             <label for="moneyBeforeTax">每筆税前金額</label>
           </div>
-          <div class="col-9">
+          <div class="col-auto">
             <input id="moneyBeforeTax" name="moneyBeforeTax" class="form-control"
                    type="number" value="10" min="2" />
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <div class="col-4">
+            <label for="uniqUserId">一位鄉民只發一次</label>
+          </div>
+          <div class="col-auto">
+            <input id="uniqUserId" name="uniqUserId" class="check-control"
+                   type="checkbox" checked />
           </div>
         </div>
 
@@ -64,7 +74,7 @@
           <div class="col-auto">
             <label for="nFloors">每</label>
           </div>
-          <div class="col-auto">
+          <div class="col-2">
             <input id="nFloors" name="nFloors" class="form-control"
                    type="number" value="1" min="1" />
           </div>
@@ -98,27 +108,34 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <div class="form-check">
-            <input id="uniqUserId" name="uniqUserId" class="form-check-control"
-                   type="checkbox" checked />
-            <label for="uniqUserId">一位鄉民只發一次</label>
-          </div>
-        </div>
-
         <div class="form-group row">
-          <div class="col-10">
+          <div class="col-9">
           </div>
           <div class="col-auto">
             <button type="submit" class="btn btn-primary">發送P幣</button>
           </div>
         </div>
       </form>
+    </div>
 
+    <div class="container">
       <div id="confirmBlock" style="display:none;">
         <div id="confirmMessage"></div>
         <button id="comfirmYes" class="btn btn-primary">確定送出</button>
         <button id="comfirmNo" class="btn btn-danger">取消</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <label class="text-muted small" for="helpCheckbox">幫助</label>
+      <input type="checkbox" id="helpCheckbox" style="display:none;">
+      <div class="hiddenHelp">
+        尋找更多說明或回報錯誤請到
+        <a href="https://github.com/wabilin/MumiGiveP" alt="MumiGiveP at GitHub">
+          MumiGiveP (GitHub)
+        </a>
+        <br />
+        或於 PTT　站內信: lintsu
       </div>
     </div>
 
@@ -127,7 +144,15 @@
        min-width: 576px;
        margin-top: 18px;
        margin-bottom: 18px;
-     };
+     }
+
+     .hiddenHelp{
+       display: none;
+     }
+
+     #helpCheckbox:checked + .hiddenHelp{
+       display: block;
+     }
     </style>
     <script src="popup.js"></script>
   </body>

@@ -70,6 +70,8 @@ form.onsubmit = (event) => {
     })
     .catch((e) => {
       showError(e.message);
+      hideElement(muming);
+      showElement(form);
     });
 
   return false;

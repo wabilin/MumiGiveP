@@ -1,17 +1,19 @@
 const browser = require('webextension-polyfill');
 
-class NoPttTabError extends Error {
-  constructor(...args) {
-    super(...args);
-    this.name = 'NoPttTabError';
-  }
-}
+const findTarget = q => (
+  (typeof (q) === 'string') ? document.getElementById(q) : q
+);
 
-const hideElement = (e) => { e.style.display = 'nono'; };
-const showElement = (e) => { e.style.display = 'block'; };
+const hideElement = (target) => {
+  findTarget(target).style.display = 'none';
+};
+const showElement = (target) => {
+  findTarget(target).style.display = 'block';
+};
+
 const hideMessages = () => {
-  hideElement(document.getElementById('successMsg'));
-  hideElement(document.getElementById('errorMsg'));
+  hideElement('successMsg');
+  hideElement('errorMsg');
 };
 const showSuccess = (text) => {
   const success = document.getElementById('successMsg');
@@ -20,7 +22,7 @@ const showSuccess = (text) => {
 };
 
 const showError = (text) => {
-  const error = document.getElementById('successMsg');
+  const error = document.getElementById('errorMsg');
   error.innerHTML = text;
   showElement(error);
 };
@@ -33,7 +35,7 @@ const sendMessageToCurrentTab = async (message) => {
   });
 
   if (activeTabs.length === 0) {
-    throw new NoPttTabError();
+    throw new Error('現在開啟的分頁並非 PTT 分頁，請開啟 https://term.ptt.cc');
   }
 
   return browser.tabs.sendMessage(activeTabs[0].id, message);
@@ -56,25 +58,67 @@ form.onsubmit = (event) => {
 
   sendFormToContent(event.target)
     .then((response) => {
-      form.style.display = 'block';
-      muming.style.display = 'none';
       hideElement(muming);
       showElement(form);
 
-      const { success, ids, error } = response;
+      const { success, message, error } = response;
       if (success) {
-        showSuccess(ids.join(', '));
+        showSuccess(message);
       } else {
-        showError(error.message);
+        showError(error);
       }
     })
     .catch((e) => {
-      if (e.name === 'NoPttTabError') {
-        showError('PTT tab not found');
-      } else {
-        showError(e.message);
-      }
+      showError(e.message);
     });
 
   return false;
 };
+
+function askConfirm(ids) {
+  let done = false;
+  const [yesButton, noButton, confirmMessage] = ['comfirmYes', 'comfirmNo', 'confirmMessage']
+    .map(id => document.getElementById(id));
+
+  const idsStr = ids.join(', ');
+  confirmMessage.innerHTML = `確認要發送 P 幣 給以下 ID 嗎?<p>${idsStr}</p>`;
+
+  const finish = () => {
+    done = true;
+    yesButton.onclick = null;
+    noButton.onclick = null;
+    confirmMessage.innerHTML = '';
+    hideElement('confirmBlock');
+  };
+
+  showElement('confirmBlock');
+
+  return new Promise((reslove, reject) => {
+    yesButton.onclick = () => {
+      finish();
+      reslove(true);
+    };
+
+    noButton.onclick = () => {
+      finish();
+      reslove(false);
+    };
+
+    setTimeout(() => {
+      if (!done) {
+        finish();
+        reject(new Error('Timeout'));
+      }
+    }, 30000);
+  });
+}
+
+async function handleMessage(request) {
+  const { action } = request;
+  if (action && action === 'confirmId') {
+    const ok = await askConfirm(request.ids);
+    return { ok };
+  }
+  return null;
+}
+browser.runtime.onMessage.addListener(handleMessage);

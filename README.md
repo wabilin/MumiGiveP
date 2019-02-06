@@ -34,6 +34,18 @@ yarn dev
 
 使用 addon 資料夾中的內容載入 FireFox / Chrome Addon 除錯模式
 
+## TODO
+1. 過濾自己
+1. 保存設定
+1. 稅前稅後
+1. 推文內容條件
+1. Better LOGO
+1. 修改紅包
+1. 抽獎
+
+### Not to do
+1. 贊助作者
+
 
 # 桌面版 MumiGiveP （停止維護 / No longer supported）
 
@@ -83,18 +95,6 @@ For crawling PTT website
 
 [https://github.com/kennethreitz/requests](https://github.com/kennethreitz/requests)
 
-## TODO
-1. 貼上推文分析
-1. 稅前稅後
-1. 推文內容條件
-1. SSH 連線
-1. LOGO
-1. 編輯發送名單
-1. 修改紅包
-
-### Not to do
-1. 抽獎
-1. 贊助作者
 
 # Thanks
 

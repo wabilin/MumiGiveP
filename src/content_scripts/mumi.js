@@ -15,18 +15,32 @@ const listener = async (request) => {
     const controller = new PttController(input);
     const ptt = new Command(controller);
 
-    const res = await ptt.mumiGiveP(request);
+    const ids = await ptt.getTargetUserIds(request);
+
+    const confirmRes = await browser.runtime.sendMessage({
+      action: 'confirmId',
+      ids,
+    });
+
+    if (!confirmRes.ok) {
+      return {
+        success: true,
+        message: '已取消發送。',
+      };
+    }
+
+    const res = await ptt.mumiGiveP(ids, request);
     if (res.success) {
       return {
         success: true,
-        ids: res.ids,
+        message: '已發送完成。',
       };
     }
     throw new Error('Unknown fail');
   } catch (error) {
     return {
-      error,
       success: false,
+      error: error.message,
     };
   }
 };

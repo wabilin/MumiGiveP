@@ -10,9 +10,7 @@ class Command {
 
   // ---- global commands ----
 
-  async mumiGiveP(settings) {
-    const pushInfos = await this.parsePushs();
-    const ids = pushUserFilter(pushInfos, settings);
+  async mumiGiveP(ids, settings) {
     const password = settings.get('pttPassword');
     const moneyBeforeTax = Number(settings.get('moneyBeforeTax'));
 
@@ -29,6 +27,12 @@ class Command {
       ids,
       success: true,
     };
+  }
+
+  async getTargetUserIds(settings) {
+    const pushInfos = await this.parsePushs();
+    const ids = pushUserFilter(pushInfos, settings);
+    return ids;
   }
 
 

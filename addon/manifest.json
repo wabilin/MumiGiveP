@@ -6,7 +6,8 @@
   "description": "A PTT money sending bot.",
 
   "icons": {
-    "48": "icons/border-48.png"
+    "128": "icons/mumi-128.png",
+    "48": "icons/mumi-48.png"
   },
 
   "permissions":[
@@ -25,7 +26,8 @@
 
   "browser_action": {
     "default_icon": {
-      "48": "icons/border-48.png"
+      "128": "icons/mumi-128.png",
+      "48": "icons/mumi-48.png"
     },
     "default_popup": "popup.html",
     "default_title": "Whereami?"

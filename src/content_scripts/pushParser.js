@@ -26,11 +26,18 @@ const pushType = (span) => {
   return matched ? matched[0] : null;
 };
 
-const pushLineFormat = lineSpan => (
-  lineSpan
-  && ('children' in lineSpan)
-  && ('length' in lineSpan.children)
-  && (lineSpan.children.length >= 3));
+const pushLineFormat = line => {
+  const { children } = line
+  if (!(children && children.length && children.length >= 1)) {
+    return null
+  }
+
+  const idSpan = children[0];
+  return idSpan &&
+    ('children' in idSpan) &&
+    ('length' in idSpan.children) &&
+    (idSpan.children.length >= 3);
+};
 
 const matchIdRule = (id) => {
   if (!id) {
@@ -43,17 +50,16 @@ const matchIdRule = (id) => {
 
 const parsePushData = (line) => {
   if (!pushLineFormat(line)) { return null; }
+  const headSpan = line.children[0];
 
-  const type = pushType(line.children[0]);
-  const [, id, comment, timestamp] = [...line.children].map(x => x.innerHTML);
+  const type = pushType(headSpan.children[0]);
+  const id = headSpan.children[1].innerHTML;
 
   if (!type || !matchIdRule(id)) { return null; }
 
   return {
     type,
     id,
-    comment,
-    timestamp,
     raw: line.innerHTML,
   };
 };
@@ -72,8 +78,7 @@ const filterLinesUnderArticle = (lines) => {
 
 const getPushInfos = (rawLines) => {
   const linesUnderArticle = filterLinesUnderArticle(rawLines);
-  const innerSpans = linesUnderArticle.map(raw => raw.children && raw.children[0]);
-  const pushInfos = innerSpans.map(parsePushData).filter(x => x);
+  const pushInfos = linesUnderArticle.map(parsePushData).filter(x => x);
   const uniqPushInfos = _.uniqBy(pushInfos, info => info.raw);
   return uniqPushInfos;
 };

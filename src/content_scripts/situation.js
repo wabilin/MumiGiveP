@@ -39,6 +39,20 @@ module.exports = {
     });
   },
 
+  isAskingMoneyAmount() {
+    return matches(
+      { row: 3 },
+      { target: 'text', includes: '請輸入金額' },
+    )
+  },
+
+  isTransactionCanceled() {
+    return matches(
+      { row: 23 },
+      { target: 'text', includes: '交易取消' },
+    )
+  },
+
   isConfirmingTransaction() {
     return matches(FOOT, {
       target: 'text',

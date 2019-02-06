@@ -29,11 +29,11 @@ const listener = async (request) => {
       await ptt.gotoPttStore();
       console.log('Go to store!');
     } else if (request === 'give-p') {
-      await ptt.giveMoneyTo('mumiGiveP', '2');
+      await ptt.giveMoneyTo('mumiGiveP', '2', prompt('pass:'));
       console.log('Go to store!');
     }
   } catch (error) {
-    console.console.error(error);
+    console.error(error);
   }
 };
 

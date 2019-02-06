@@ -1,6 +1,7 @@
 const pttContent = require('./pttContent');
 const pushParser = require('./pushParser');
 const situation = require('./situation');
+const pushUserFilter = require('./pushUserFilter')
 
 class Command {
   constructor(controller) {
@@ -9,11 +10,24 @@ class Command {
 
   // ---- global commands ----
 
-  async mumiGiveP() {
+  async mumiGiveP(settings) {
     const pushInfos = await this.parsePushs()
+    const ids = pushUserFilter(pushInfos, settings)
+    const password = settings.get('pttPassword')
+    const moneyBeforeTax = Number(settings.get('moneyBeforeTax'))
 
-    console.log(pushInfos)
-    console.log(JSON.stringify(pushInfos))
+    if(!(ids && password && moneyBeforeTax)) {
+      throw new Error('Missing required args to #mumiGiveP.')
+    }
+
+    for (const id of ids) {
+      await this.giveMoneyTo(id, moneyBeforeTax, password)
+    }
+
+    return {
+      ids,
+      success: true,
+    }
   }
 
   gotoMainPage() {
@@ -61,9 +75,14 @@ class Command {
     this.sendText(id);
     this.sendKey('Enter');
 
-    await pttContent.waitTil(() => pttContent.matches(
-      { row: 3 }, { target: 'text', includes: '請輸入金額' },
+    await pttContent.waitTil(() => (
+      situation.isAskingMoneyAmount() ||
+        situation.isTransactionCanceled()
     ));
+
+    if (situation.isTransactionCanceled()) {
+      throw new Error('Transaction is canceled. (Incorrect ID)')
+    }
 
     this.sendText(String(amount));
     this.sendKey('Enter');
@@ -72,17 +91,19 @@ class Command {
       || situation.isConfirmingTransaction());
 
     if (situation.isAskingPassword()) {
+      // Key password and send money
+
       this.sendText(password);
       this.sendKey('Enter');
-    }
 
-    await pttContent.waitTil(() => (
-      situation.isInvalidPassword()
-      || situation.isConfirmingTransaction()
-    ), { timeout: 10000 });
+      await pttContent.waitTil(() => (
+        situation.isInvalidPassword()
+          || situation.isAskingEditRedEnvelope()
+      ), { timeout: 10000 });
 
-    if (situation.isInvalidPassword()) {
-      throw new Error('Invalid Password');
+      if (situation.isInvalidPassword()) {
+        throw new Error('Invalid Password');
+      }
     } else {
       // 'y' for 確定進行交易嗎？
       this.sendText('y');
@@ -90,13 +111,16 @@ class Command {
     }
 
     await pttContent.waitTil(
-      () => situation.isAskingEditRedEnvelope(),
+      situation.isAskingEditRedEnvelope,
       { timeout: 10000 },
     );
     this.sendText('n');
     this.sendKey('Enter');
 
-    await pttContent.waitTil(() => situation.isTransactionFinished());
+    await pttContent.waitTil(situation.isTransactionFinished);
+
+    this.sendKey('Enter');
+    await pttContent.waitTil(situation.isInPttStore)
 
     return true;
   }

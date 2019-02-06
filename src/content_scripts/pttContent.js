@@ -86,7 +86,7 @@ const elementMatch = (element, options) => {
 /**
  * @param {number | string} rowIndex - 'any' or number in 0..23
  * @param {Object} options
-**/
+ */
 const rowMatch = (rowIndex, options) => {
   const rows = getBbsLines();
   if (rowIndex === 'any') {

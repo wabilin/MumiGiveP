@@ -79,7 +79,8 @@ const filterLinesUnderArticle = (lines) => {
 const getPushInfos = (rawLines) => {
   const linesUnderArticle = filterLinesUnderArticle(rawLines);
   const pushInfos = linesUnderArticle.map(parsePushData).filter(x => x);
-  const uniqPushInfos = _.uniqBy(pushInfos, info => info.raw);
+  const uniqPushInfos = _.uniqBy(pushInfos,
+    info => info.raw.replace(/\s/g, ''));
   return uniqPushInfos;
 };
 

@@ -56,6 +56,31 @@ describe('pushUserFilter', () => {
 
     expect(filtered[4]).toEqual("kuku321")
   })
+
+  it('filter by uniqUserId', () => {
+    const filtered = pushUserFilter(
+      getExamplePushs(),
+      settting({ uniqUserId: 'on', sendAmount: '20' }),
+    );
+
+    expect(filtered.length).toEqual(
+      (new Set(filtered)).size
+    )
+  })
+
+  it('filter by multi options', () => {
+    const filtered = pushUserFilter(
+      getExamplePushs(),
+      settting({
+        push: '',
+        arrow: 'on',
+        nFloors: '3',
+        sendAmount: '2',
+      }),
+    );
+
+    expect(filtered).toEqual(['danielwoody', 'slainshadow'])
+  })
 })
 
 const DEFAULT_ATTRS = {

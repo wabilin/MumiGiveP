@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const { PushType } = require('./pushParser.js')
 
 /**
@@ -20,7 +21,7 @@ function pushUserFilter(pushInfos, settings) {
   }
 
   const filterPushTypes = (pushInfos) => {
-    const allowedTypes=  {
+    const allowedTypes = {
       [PushType.PUSH]: settings.get('push'),
       [PushType.BOO]: settings.get('boo'),
       [PushType.ARROW]: settings.get('arrow'),
@@ -29,8 +30,16 @@ function pushUserFilter(pushInfos, settings) {
     return pushInfos.filter(x => allowedTypes[x.type])
   }
 
+  const filterUniqIds = (pushInfos) => {
+    if (settings.get('uniqUserId')) {
+      return _.uniqBy(pushInfos, info => info.id)
+    } else {
+      return pushInfos;
+    }
+  }
 
   let filtered = filterPushTypes(pushInfos);
+  filtered = filterUniqIds(filtered)
   filtered = filterNFloors(filtered)
   return filterAmount(filtered).map(x => x.id)
 };

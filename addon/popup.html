@@ -9,6 +9,12 @@
 
   <body>
     <div id="container" class="container">
+      <div class="d-flex flex justify-content-center">
+        <h1 class="h3">姆咪發錢~</h1>
+      </div>
+      <div class="d-flex flex justify-content-center">
+        <p class="text-muted small">姆咪...</p>
+      </div>
       <div id="logDiv">
       </div>
       <div id="mumi-ing-div" style='display: none;'>
@@ -16,7 +22,10 @@
       </div>
       <form id="mumiForm">
         <div class="form-group row">
-          <label for="pttPassword" class="col-3 col-form-label">PTT 密碼</label>
+          <label for="pttPassword" class="col-3 col-form-label">
+            PTT 密碼
+            <small class="text-danger">*</small>
+          </label>
           <div class="col-9">
             <input id="pttPassword" name="pttPassword" class="form-control"
                    required
@@ -79,6 +88,14 @@
                      id="arrowBox" name="arrow">
               <label class="form-check-label" for="arrowBox">→</label>
             </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="form-check">
+            <input id="uniqUserId" name="uniqUserId" class="form-check-control"
+                   type="checkbox" checked />
+            <label for="uniqUserId">一位鄉民只發一次</label>
           </div>
         </div>
 

@@ -17,13 +17,13 @@ const hideMessages = () => {
 };
 const showSuccess = (text) => {
   const success = document.getElementById('successMsg');
-  success.innerHTML = text;
+  success.textContent = text;
   showElement(success);
 };
 
 const showError = (text) => {
   const error = document.getElementById('errorMsg');
-  error.innerHTML = text;
+  error.textContent = text;
   showElement(error);
 };
 
@@ -82,8 +82,10 @@ function askConfirm(ids) {
   const [yesButton, noButton, confirmMessage] = ['comfirmYes', 'comfirmNo', 'confirmMessage']
     .map(id => document.getElementById(id));
 
-  const idsStr = ids.join(', ');
-  confirmMessage.innerHTML = `確認要發送 P 幣 給以下 ID 嗎?<p>${idsStr}</p>`;
+  const idListP = document.createElement('p');
+  idListP.textContent = ids.join(', ');
+  confirmMessage.textContent = '確認要發送 P 幣 給以下 ID 嗎?';
+  confirmMessage.appendChild(idListP);
 
   const finish = () => {
     done = true;

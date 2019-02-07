@@ -44,6 +44,16 @@ class Command {
     );
   }
 
+  async parseAuthorId() {
+    if (!situation.isInArticle()) {
+      throw new Error('不在文章頁面中，無法取得作者ID。');
+    }
+
+    await this.inArticleGotoPageBeginning();
+    const idSpan = pttContent.getBbsLines()[0].children[0].children[1];
+    return idSpan.textContent.replace(/\s/g, '').replace(/\(.*\)/, '');
+  }
+
   async parsePushs() {
     if (!situation.isInArticle()) {
       throw new Error('不在文章頁面中，無法取得推文清單。');

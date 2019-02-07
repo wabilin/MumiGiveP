@@ -15,7 +15,9 @@ const listener = async (request) => {
     const controller = new PttController(input);
     const ptt = new Command(controller);
 
-    const ids = await ptt.getTargetUserIds(request);
+    const authorId = await ptt.parseAuthorId();
+    const settings = { ...request, pttId: authorId };
+    const ids = await ptt.getTargetUserIds(settings);
 
     const confirmRes = await browser.runtime.sendMessage({
       action: 'confirmId',
@@ -29,7 +31,7 @@ const listener = async (request) => {
       };
     }
 
-    const res = await ptt.mumiGiveP(ids, request);
+    const res = await ptt.mumiGiveP(ids, settings);
     if (res.success) {
       return {
         success: true,

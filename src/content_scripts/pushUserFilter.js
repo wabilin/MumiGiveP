@@ -37,7 +37,26 @@ function pushUserFilter(pushInfos, settings) {
     return pushs;
   };
 
-  let filtered = filterPushTypes(pushInfos);
+  const filterStartFloor = (pushs) => {
+    const startFloor = Number(settings.startFloor);
+    if (!Number.isInteger(startFloor) || startFloor < 1) {
+      throw new Error('起始樓層設定錯誤。');
+    }
+
+    return pushs.slice(startFloor - 1);
+  };
+
+  const filterPttId = (pushs) => {
+    const { pttId } = settings;
+    if (!pttId) { return pushs; }
+
+    return pushs.filter(x => x.id !== pttId);
+  };
+
+  let filtered = pushInfos;
+  filtered = filterStartFloor(filtered);
+  filtered = filterPttId(filtered);
+  filtered = filterPushTypes(filtered);
   filtered = filterUniqIds(filtered);
   filtered = filterNFloors(filtered);
   return filterAmount(filtered).map(x => x.id);

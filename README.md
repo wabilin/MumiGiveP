@@ -52,7 +52,6 @@ The built package could be found at: `dist/`
 使用 addon 資料夾中的內容載入 FireFox / Chrome Addon 除錯模式
 
 ## TODO
-1. [ ] 過濾自己
 1. [ ] 保存設定
 1. [ ] 稅前稅後
 1. [ ] 推文內容條件

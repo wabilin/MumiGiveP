@@ -52,63 +52,19 @@ The built package could be found at: `dist/`
 ## TODO
 1. [ ] 保存設定
 1. [ ] 稅前稅後
-1. [ ] 推文內容條件
 1. [ ] Better LOGO
 1. [ ] 修改紅包
 1. [ ] 抽獎
 
-### Not to do
+## Not to do
 1. 贊助作者
 
 
-# 桌面版 MumiGiveP （停止維護 / No longer supported）
+## 桌面版 MumiGiveP （No longer supported）
 
-支援 Windows, MacOs 和 Linux 系統。
+初代桌面版本已停止維護，若需舊版程式或原始碼，[請點我](https://github.com/wabilin/MumiGiveP/tree/python-app-latset)。
 
-**DEMO** : [Youtube](https://youtu.be/kCIcbG_cX0U)
-
-## Download and Installation
-### Binary
-Windows 及 MacOS 使用者可從以下位置直接下載執行檔：
-
- - [GitHub Releases](https://github.com/wabilin/MumiGiveP/releases)
-
- - [Google Drive](https://goo.gl/HOHaot)
-
-### Source
-建議 Linux 及 MacOS 使用者，直接執行原始碼。
-
-Download zip at [Github](https://github.com/wabilin/MumiGiveP)
-
-or
-
-```
-git clone git@github.com:wabilin/MumiGiveP.git
-```
-
-After that, run this script to install dependencies
-
-```
-pip install -r requirements.txt
-```
-
-then run
-
-```
-python mumi.py
-```
-
-## 3rd Party Library
-### andycjw/uao_decode.py
-For PTT encoding
-
-[https://gist.github.com/andycjw/5617496](https://gist.github.com/andycjw/5617496)
-
-### Requests
-For crawling PTT website
-
-[https://github.com/kennethreitz/requests](https://github.com/kennethreitz/requests)
-
+MumiGiveP desktop app version: [Click me](https://github.com/wabilin/MumiGiveP/tree/python-app-latset)。
 
 # Thanks
 
@@ -134,8 +90,3 @@ For crawling PTT website
  - eight0
 
 有賴鄉民們熱心協助，本程式終得以完成。
-
-## 關於更新
-
-因為個人技能樹點到其他地方，目前 Python 版將停止更新維護。
-在近期會有更加完善的新版本面世，敬請耐心等候 :)

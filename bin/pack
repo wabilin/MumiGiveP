@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -ex
+
+rm -rf dist
+zip -r -FS ../mumi-src.zip . -x \*.git\* -x \*node_modules\* -x \*.DS_Store\*
+
+yarn build
+
+if [ ! -d 'dist' ]; then
+    exit 1
+fi
+
+cd dist && zip -r -FS ../../mumi.zip * && cd ..
+

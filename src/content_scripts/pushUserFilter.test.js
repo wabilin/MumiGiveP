@@ -214,6 +214,17 @@ describe('pushUserFilter', () => {
     ]);
   });
 
+  it('filter by commentContains', () => {
+    const filtered = pushUserFilter(
+      getExamplePushs(),
+      settting({ commentContains: '悠木碧' }),
+    );
+
+    expect(filtered).toEqual([
+      'kuku321',
+    ]);
+  });
+
   it('filter by multi options', () => {
     const filtered = pushUserFilter(
       getExamplePushs(),

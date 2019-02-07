@@ -10,6 +10,7 @@
 支援 FireFox & Chrome，有瀏覽器就能輕鬆發錢！
 
 [![Download on Firefox Add-ons](images/amo-button.png?raw=true)](https://addons.mozilla.org/zh-TW/firefox/addon/mumigivep/)
+[![Download on Chrome Store](images/chrome-store-button.png?raw=true)](https://chrome.google.com/webstore/detail/mumigivep/geajaainhidioieejcpjajhifgoemomo)
 
 ## Screenshot
 - 操作介面
@@ -19,9 +20,6 @@
 - Demo
 
 ![Mumi Demo GIF](https://s2.gifyu.com/images/480-low.gif)
-
-## Download and Installation
-Chrome version coming soon.
 
 ## Usage
 

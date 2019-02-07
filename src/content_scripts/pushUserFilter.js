@@ -58,12 +58,12 @@ function pushUserFilter(pushInfos, settings) {
     if (!commentContains) { return pushs; }
 
     return pushs.filter(x => x.raw.includes(commentContains));
-  }
+  };
 
   let filtered = pushInfos;
   filtered = filterStartFloor(filtered);
   filtered = filterPttId(filtered);
-  filtered = filterCommentContains(filtered)
+  filtered = filterCommentContains(filtered);
   filtered = filterPushTypes(filtered);
   filtered = filterUniqIds(filtered);
   filtered = filterNFloors(filtered);

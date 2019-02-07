@@ -11,8 +11,8 @@ class Command {
   // ---- global commands ----
 
   async mumiGiveP(ids, settings) {
-    const password = settings.get('pttPassword');
-    const moneyBeforeTax = Number(settings.get('moneyBeforeTax'));
+    const password = settings.pttPassword;
+    const moneyBeforeTax = Number(settings.moneyBeforeTax);
 
     if (!(ids && password && moneyBeforeTax)) {
       throw new Error('Missing required args to #mumiGiveP.');

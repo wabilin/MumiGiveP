@@ -111,21 +111,16 @@ function getExamplePushs() {
   ];
 }
 
-const DEFAULT_ATTRS = {
+const DEFAULT_ATTRS = Object.freeze({
   sendAmount: '2',
   nFloors: 1,
   push: 'on',
   boo: 'on',
   arrow: 'on',
-};
+});
 
 function settting(attrs) {
-  const form = new FormData();
-  const attrsWithDefault = { ...DEFAULT_ATTRS, ...attrs };
-  Object.entries(attrsWithDefault).forEach(([key, value]) => {
-    form.set(key, value);
-  });
-  return form;
+  return { ...DEFAULT_ATTRS, ...attrs };
 }
 
 describe('pushUserFilter', () => {

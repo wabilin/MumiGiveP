@@ -2,3 +2,4 @@
 *.log
 .tern-project
 node_modules
+junit.xml

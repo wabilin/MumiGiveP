@@ -41,8 +41,13 @@ const sendMessageToCurrentTab = async (message) => {
   return browser.tabs.sendMessage(activeTabs[0].id, message);
 };
 
-const sendFormToContent = (form) => {
-  const data = new FormData(form);
+const sendFormToContent = async (form) => {
+  const formData = new FormData(form);
+  const data = {};
+  [...formData.entries()].forEach(([key, value]) => {
+    data[key] = value;
+  });
+
   return sendMessageToCurrentTab(data);
 };
 

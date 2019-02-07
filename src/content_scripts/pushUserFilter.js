@@ -7,14 +7,14 @@ const { PushType } = require('./pushParser.js');
 * */
 function pushUserFilter(pushInfos, settings) {
   const filterAmount = (pushs) => {
-    const sendAmount = Number(settings.get('sendAmount'));
+    const sendAmount = Number(settings.sendAmount);
     if (!sendAmount) { throw new Error('Amount not valid'); }
 
     return pushs.slice(0, sendAmount);
   };
 
   const filterNFloors = (pushs) => {
-    const n = Number(settings.get('nFloors'));
+    const n = Number(settings.nFloors);
     if (!n) { throw new Error('nFloors not valid'); }
 
     return pushs.filter((x, i) => i % n === 0);
@@ -22,16 +22,16 @@ function pushUserFilter(pushInfos, settings) {
 
   const filterPushTypes = (pushs) => {
     const allowedTypes = {
-      [PushType.PUSH]: settings.get('push'),
-      [PushType.BOO]: settings.get('boo'),
-      [PushType.ARROW]: settings.get('arrow'),
+      [PushType.PUSH]: settings.push,
+      [PushType.BOO]: settings.boo,
+      [PushType.ARROW]: settings.arrow,
     };
 
     return pushs.filter(x => allowedTypes[x.type]);
   };
 
   const filterUniqIds = (pushs) => {
-    if (settings.get('uniqUserId')) {
+    if (settings.uniqUserId) {
       return _.uniqBy(pushs, info => info.id);
     }
     return pushs;

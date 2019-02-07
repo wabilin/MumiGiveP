@@ -1,7 +1,11 @@
 const path = require('path');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const projectDir = __dirname;
 const sourceDir = path.join(projectDir, 'src');
+const staticDir = path.join(projectDir, 'addon');
+const buildDir = path.join(projectDir, 'dist');
 const config = {
   optimization: {
     minimize: true,
@@ -13,9 +17,19 @@ const config = {
   },
 
   output: {
-    path: path.resolve(projectDir, 'addon'),
+    path: buildDir,
     filename: '[name].js',
   },
+
+  plugins: [
+    new CleanWebpackPlugin(buildDir),
+    new CopyWebpackPlugin([
+      {
+        from: staticDir,
+        to: buildDir,
+      },
+    ]),
+  ],
 };
 
 module.exports = (env, argv) => {

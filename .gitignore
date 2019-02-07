@@ -3,3 +3,4 @@
 .tern-project
 node_modules
 junit.xml
+dist

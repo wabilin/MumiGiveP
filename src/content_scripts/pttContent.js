@@ -22,7 +22,7 @@ const waitChange = ({ timeout = 1000 } = {}) => {
 
       if (currentTime() - startedAt > timeout) {
         observer.disconnect();
-        return reject(new Error('Wait for document mutation timeout.'));
+        return reject(new Error('等待刷新內容逾時'));
       }
 
       return setTimeout(run, 10);

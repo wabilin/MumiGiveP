@@ -160,6 +160,8 @@ class Command {
   }
 
   inArticleCollectPushLines() {
+    let retry = 0;
+
     const recCollect = async (collectedLines) => {
       const currentLines = [...pttContent.getBbsLines()]
         .map(line => line.cloneNode(true));
@@ -169,9 +171,19 @@ class Command {
       if (situation.isPushsEnd()) {
         return allLines;
       }
-      this.sendKey('PageDown');
-      await pttContent.waitChange();
 
+      try {
+        this.sendKey('PageDown');
+        await pttContent.waitChange();
+      } catch(e) {
+        if (e.message !== '等待刷新內容逾時' || retry > 3) {
+          throw e;
+        }
+        retry += 1;
+        return recCollect(allLines);
+      }
+
+      retry = 0;
       return recCollect(allLines);
     };
 

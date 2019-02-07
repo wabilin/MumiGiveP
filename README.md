@@ -11,8 +11,14 @@
 
 [![Download on Firefox Add-ons](images/amo-button.png?raw=true)](https://addons.mozilla.org/zh-TW/firefox/addon/mumigivep/)
 
-## Demo
-Coming soon.
+## Screenshot
+- 操作介面
+
+![MumiGiveP UI Screenshot](images/mumi-ui.jpg?raw=true)
+
+- Demo
+
+![Mumi Demo GIF](https://s2.gifyu.com/images/480-low.gif)
 
 ## Download and Installation
 Chrome version coming soon.

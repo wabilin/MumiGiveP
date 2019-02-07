@@ -28,6 +28,19 @@
       </div>
 
       <form id="mumiForm">
+        <div class="form-group">
+          <div class="row">
+            <label for="pttId" class="col-4 col-form-label">
+              PTT ID
+            </label>
+            <div class="col-auto">
+              <input id="pttId" name="pttId" class="form-control"
+                     required type="text" />
+              <small class="text-secondary">從推文中去除自己的 ID，自己沒有推文可不填</small>
+            </div>
+          </div>
+        </div>
+
         <div class="form-group row">
           <label for="pttPassword" class="col-4 col-form-label">
             PTT 密碼
@@ -72,6 +85,15 @@
 
         <div class="form-group row">
           <div class="col-auto">
+            <label for="startFloor">從</label>
+          </div>
+          <div class="col-2">
+            <input id="startFloor" name="startFloor" class="form-control"
+                   type="number" value="1" min="1" />
+          </div>
+          <div class="col-auto">
+            <label for="startFloor">樓開始</label>
+            ，
             <label for="nFloors">每</label>
           </div>
           <div class="col-2">

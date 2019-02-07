@@ -112,6 +112,7 @@ function getExamplePushs() {
 }
 
 const DEFAULT_ATTRS = Object.freeze({
+  startFloor: '1',
   sendAmount: '2',
   nFloors: 1,
   push: 'on',
@@ -189,6 +190,28 @@ describe('pushUserFilter', () => {
     expect(filtered.length).toEqual(
       (new Set(filtered)).size,
     );
+  });
+
+  it('filter by startFloor', () => {
+    const filtered = pushUserFilter(
+      getExamplePushs(),
+      settting({ startFloor: '3' }),
+    );
+
+    expect(filtered).toEqual([
+      'fiendeo', 'iamnotgm',
+    ]);
+  });
+
+  it('filter by pttId', () => {
+    const filtered = pushUserFilter(
+      getExamplePushs(),
+      settting({ pttId: 'hipposman' }),
+    );
+
+    expect(filtered).toEqual([
+      'eva05s', 'fiendeo',
+    ]);
   });
 
   it('filter by multi options', () => {

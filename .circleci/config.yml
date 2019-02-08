@@ -21,6 +21,9 @@ jobs:
           environment:
             JEST_JUNIT_OUTPUT: "/tmp/reports/js-test-results.xml"
       - run:
+          name: flow
+          command: yarn flow
+      - run:
           name: build
           command: yarn build
       - store_artifacts:

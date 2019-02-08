@@ -1,16 +1,26 @@
+// @flow
+
 import * as situation from './situation';
 import * as pttContent from './pttContent';
 import * as pushParser from './pushParser';
 import pushUserFilter from './pushUserFilter';
+import type PttController from './PttController';
+import type { FilterSetting } from './pushUserFilter';
 
+type MumiSetting = FilterSetting & {
+  pttPassword: string,
+  moneyBeforeTax: string|number,
+}
 class Command {
-  constructor(controller) {
+  controller: PttController;
+
+  constructor(controller: PttController) {
     this.controller = controller;
   }
 
   // ---- global commands ----
 
-  async mumiGiveP(ids, settings) {
+  async mumiGiveP(ids: Array<string>, settings: MumiSetting) {
     const password = settings.pttPassword;
     const moneyBeforeTax = Number(settings.moneyBeforeTax);
 
@@ -29,7 +39,7 @@ class Command {
     };
   }
 
-  async getTargetUserIds(settings) {
+  async getTargetUserIds(settings: FilterSetting) {
     const pushInfos = await this.parsePushs();
     const ids = pushUserFilter(pushInfos, settings);
     return ids;
@@ -77,7 +87,7 @@ class Command {
     return this.fromPlaygroundToStore();
   }
 
-  async giveMoneyTo(id, amount, password) {
+  async giveMoneyTo(id: string, amount: number|string, password: string) {
     await this.gotoPttStore();
 
     this.sendText('0');
@@ -212,9 +222,13 @@ class Command {
 
   // ---- methods sent to controller ----
 
-  sendText(...args) { return this.controller.sendText(...args); }
+  sendText(text: string) {
+    return this.controller.sendText(text);
+  }
 
-  sendKey(...args) { return this.controller.sendKey(...args); }
+  sendKey(key: string) {
+    return this.controller.sendKey(key);
+  }
 }
 
 export default Command;

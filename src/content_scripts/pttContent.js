@@ -1,10 +1,12 @@
 // @flow
 
 const getContentDiv = () => document.getElementById('mainContainer');
-const getBbsLines = () => {
+const buildEmptyList = () => document.createDocumentFragment().querySelectorAll('#none');
+
+const getBbsLines = (): NodeList<HTMLElement> => {
   const content = getContentDiv();
   if (content === null) {
-    return [];
+    return buildEmptyList();
   }
 
   return content.querySelectorAll('[data-type="bbsline"]');
@@ -82,16 +84,16 @@ const dataForMatch = (element: HTMLElement, targetType: string) => {
 
 type MatchOpt = {
   target: string,
-  func: ?(HTMLElement | string) => boolean,
-  includes: ?string,
-  regex: ?RegExp,
+  func?: (HTMLElement | string) => boolean,
+  includes?: string,
+  regex?: RegExp,
 };
 
 type MatchScope = {
   row: number|string,
 };
 
-const elementMatch = (element, options: MatchOpt) => {
+const elementMatch = (element, options: MatchOpt): boolean => {
   const {
     target, func, includes, regex,
   } = options;
@@ -110,10 +112,6 @@ const elementMatch = (element, options: MatchOpt) => {
   throw new Error('Unknown option or data type');
 };
 
-/**
- * @param {number | string} rowIndex - 'any' or number in 0..23
- * @param {Object} options
- */
 const rowMatch = (rowIndex, options: MatchOpt) => {
   const rows = getBbsLines();
   if (rowIndex === 'any') {
@@ -125,13 +123,9 @@ const rowMatch = (rowIndex, options: MatchOpt) => {
   return elementMatch(rows[rowIndex], options);
 };
 
-const matches = (scope: MatchScope, matchOptions: MatchOpt) => {
-  const { row } = scope;
-  if (row !== undefined) {
-    return rowMatch(row, matchOptions);
-  }
-  throw new Error('Undefined match params');
-};
+const matches = (
+  scope: MatchScope, matchOptions: MatchOpt,
+): boolean => rowMatch(scope.row, matchOptions);
 
 const repeatTillMatch = (
   scope: MatchScope, matchOptions: MatchOpt,

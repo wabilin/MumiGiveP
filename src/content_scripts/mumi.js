@@ -1,14 +1,18 @@
+// @flow
+
 import browser from 'webextension-polyfill';
 import PttController from './PttController';
 import Command from './Command';
 
-const getPttIntput = () => document.getElementById('t');
+type PopupResponse = {
+  ok: boolean,
+}
 
 const listener = async (request) => {
-  const input = getPttIntput();
+  const input = document.getElementById('t');
 
   try {
-    if (!input) {
+    if (!(input instanceof HTMLInputElement)) {
       throw new Error('Could not get PTT input element!');
     }
 
@@ -19,7 +23,7 @@ const listener = async (request) => {
     const settings = { ...request, pttId: authorId };
     const ids = await ptt.getTargetUserIds(settings);
 
-    const confirmRes = await browser.runtime.sendMessage({
+    const confirmRes: PopupResponse = await browser.runtime.sendMessage({
       action: 'confirmId',
       ids,
     });

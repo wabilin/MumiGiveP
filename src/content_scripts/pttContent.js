@@ -1,23 +1,36 @@
-const getConentDiv = () => document.getElementById('mainContainer');
-const getBbsLines = () => getConentDiv().querySelectorAll('[data-type="bbsline"]');
+// @flow
+
+const getContentDiv = () => document.getElementById('mainContainer');
+const getBbsLines = () => {
+  const content = getContentDiv();
+  if (content === null) {
+    return [];
+  }
+
+  return content.querySelectorAll('[data-type="bbsline"]');
+};
 const currentTime = () => (new Date()).getTime();
 
-const waitChange = ({ timeout = 1000 } = {}) => {
+const waitChange = ({ timeout = 1000 } : {timeout: number} = {}) => {
   let mutated = false;
   const observer = new MutationObserver(() => {
     mutated = true;
   });
-  const pttContentDiv = getConentDiv();
+
+  const pttContentDiv = getContentDiv();
+  if (pttContentDiv === null) {
+    throw new Error('PTT Content div not found');
+  }
   observer.observe(pttContentDiv,
     { attributes: true, childList: true, subtree: true });
 
   const startedAt = currentTime();
 
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     const run = () => {
       if (mutated) {
         observer.disconnect();
-        return resolve(true);
+        return resolve();
       }
 
       if (currentTime() - startedAt > timeout) {
@@ -37,7 +50,7 @@ const waitChange = ({ timeout = 1000 } = {}) => {
  * @param {Object} options
  * @param {number} options.timeout
  */
-const waitTil = (isDone, { timeout = 3000 } = {}) => {
+const waitTil = (isDone: () => boolean, { timeout = 3000 } : {timeout: number} = {}) => {
   const startedAt = currentTime();
 
   const recWait = async () => {
@@ -58,7 +71,7 @@ const waitTil = (isDone, { timeout = 3000 } = {}) => {
  * @param {Object} element - A DOM element
  * @param {string} targetType - 'text', 'html' or 'raw'
  */
-const dataForMatch = (element, targetType) => {
+const dataForMatch = (element: HTMLElement, targetType: string) => {
   if (targetType === 'text') {
     return element.textContent;
   } if (targetType === 'html') {
@@ -67,35 +80,52 @@ const dataForMatch = (element, targetType) => {
   return element;
 };
 
-const elementMatch = (element, options) => {
+type MatchOpt = {
+  target: string,
+  func: ?(HTMLElement | string) => boolean,
+  includes: ?string,
+  regex: ?RegExp,
+};
+
+type MatchScope = {
+  row: number|string,
+};
+
+const elementMatch = (element, options: MatchOpt) => {
   const {
     target, func, includes, regex,
   } = options;
   const data = dataForMatch(element, target);
 
   if (func) { return func(data); }
-  if (includes) { return data.includes(includes); }
-  if (regex) {
-    const ok = regex.test(data);
-    return ok;
+
+  if (typeof data === 'string') {
+    if (includes) { return data.includes(includes); }
+    if (regex && data) {
+      const ok = regex.test(data);
+      return ok;
+    }
   }
 
-  throw new Error('Unknown option');
+  throw new Error('Unknown option or data type');
 };
 
 /**
  * @param {number | string} rowIndex - 'any' or number in 0..23
  * @param {Object} options
  */
-const rowMatch = (rowIndex, options) => {
+const rowMatch = (rowIndex, options: MatchOpt) => {
   const rows = getBbsLines();
   if (rowIndex === 'any') {
     return [...rows].some(row => elementMatch(row, options));
+  } if (typeof rowIndex !== 'number') {
+    throw new Error('Unexpected index');
   }
+
   return elementMatch(rows[rowIndex], options);
 };
 
-const matches = (scope, matchOptions) => {
+const matches = (scope: MatchScope, matchOptions: MatchOpt) => {
   const { row } = scope;
   if (row !== undefined) {
     return rowMatch(row, matchOptions);
@@ -103,16 +133,18 @@ const matches = (scope, matchOptions) => {
   throw new Error('Undefined match params');
 };
 
-const repeatTillMatch = (scope, matchOptions, callback, options = {}) => {
-  const { timeout = 30000, retry = 3 } = options;
-
+const repeatTillMatch = (
+  scope: MatchScope, matchOptions: MatchOpt,
+  callback: (...args: Array<mixed>) => mixed,
+  { timeout = 30000, retry = 3 }: {timeout: number, retry: number} = {},
+) => {
   const startedAt = currentTime();
   let retried = 0;
 
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     const run = () => {
       if (matches(scope, matchOptions)) {
-        return resolve(true);
+        return resolve();
       }
 
       if (currentTime() - startedAt > timeout) {
@@ -124,7 +156,7 @@ const repeatTillMatch = (scope, matchOptions, callback, options = {}) => {
           retried = 0;
           return run();
         })
-        .catch((err) => {
+        .catch((err: Error) => {
           if (retried >= retry) { return reject(err); }
 
           retried += 1;
@@ -139,8 +171,8 @@ const repeatTillMatch = (scope, matchOptions, callback, options = {}) => {
 };
 
 
-module.exports = {
-  getConentDiv,
+export {
+  getContentDiv,
   getBbsLines,
   waitChange,
   waitTil,

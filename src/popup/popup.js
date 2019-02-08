@@ -1,4 +1,4 @@
-const browser = require('webextension-polyfill');
+import browser from 'webextension-polyfill';
 
 const findTarget = q => (
   (typeof (q) === 'string') ? document.getElementById(q) : q
@@ -37,6 +37,10 @@ const sendMessageToCurrentTab = async (message) => {
   if (activeTabs.length === 0) {
     throw new Error('現在開啟的分頁並非 PTT 分頁，請開啟 https://term.ptt.cc');
   }
+
+  await browser.tabs.executeScript({
+    file: 'mumi.js',
+  });
 
   return browser.tabs.sendMessage(activeTabs[0].id, message);
 };

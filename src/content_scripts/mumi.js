@@ -1,6 +1,6 @@
-const browser = require('webextension-polyfill');
-const PttController = require('./PttController');
-const Command = require('./Command');
+import browser from 'webextension-polyfill';
+import PttController from './PttController';
+import Command from './Command';
 
 const getPttIntput = () => document.getElementById('t');
 

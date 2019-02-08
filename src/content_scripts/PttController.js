@@ -40,4 +40,4 @@ class PttController {
   }
 }
 
-module.exports = PttController;
+export default PttController;

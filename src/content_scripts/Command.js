@@ -1,7 +1,7 @@
-const pttContent = require('./pttContent');
-const pushParser = require('./pushParser');
-const situation = require('./situation');
-const pushUserFilter = require('./pushUserFilter');
+import * as situation from './situation';
+import * as pttContent from './pttContent';
+import * as pushParser from './pushParser';
+import pushUserFilter from './pushUserFilter';
 
 class Command {
   constructor(controller) {
@@ -175,7 +175,7 @@ class Command {
       try {
         this.sendKey('PageDown');
         await pttContent.waitChange();
-      } catch(e) {
+      } catch (e) {
         if (e.message !== '等待刷新內容逾時' || retry > 3) {
           throw e;
         }
@@ -217,4 +217,4 @@ class Command {
   sendKey(...args) { return this.controller.sendKey(...args); }
 }
 
-module.exports = Command;
+export default Command;

@@ -1,5 +1,5 @@
-const _ = require('lodash');
-const { PushType } = require('./pushParser.js');
+import _ from 'lodash';
+import { PushType } from './pushParser';
 
 /**
  * @param { Array } pushInfos
@@ -70,4 +70,4 @@ function pushUserFilter(pushInfos, settings) {
   return filterAmount(filtered).map(x => x.id);
 }
 
-module.exports = pushUserFilter;
+export default pushUserFilter;

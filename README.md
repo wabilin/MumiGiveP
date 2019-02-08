@@ -1,7 +1,7 @@
 # MumiGiveP
 
 [![CircleCI](https://circleci.com/gh/wabilin/MumiGiveP.svg?style=svg)](https://circleci.com/gh/wabilin/MumiGiveP)
-[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/wabilin/MumiGiveP.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/wabilin/MumiGiveP/context:javascript)
+[![CodeFactor](https://www.codefactor.io/repository/github/wabilin/mumigivep/badge)](https://www.codefactor.io/repository/github/wabilin/mumigivep)
 
 > 姆咪姆咪發錢錢。
 

@@ -1,4 +1,4 @@
-const pushUserFilter = require('./pushUserFilter');
+import pushUserFilter from './pushUserFilter';
 
 // Example data from: https://www.ptt.cc/bbs/PlayStation/M.1503932148.A.4D4.html
 function getExamplePushs() {

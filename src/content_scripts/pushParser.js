@@ -1,4 +1,4 @@
-const _ = require('lodash');
+import _ from 'lodash';
 
 const PushType = {
   PUSH: 'PUSH',
@@ -84,5 +84,4 @@ const getPushInfos = (rawLines) => {
   return uniqPushInfos;
 };
 
-
-module.exports = { PushType, parsePushData, getPushInfos };
+export { PushType, parsePushData, getPushInfos };

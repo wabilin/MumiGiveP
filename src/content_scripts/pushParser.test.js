@@ -1,4 +1,4 @@
-const { PushType, parsePushData } = require('./pushParser');
+import { PushType, parsePushData } from './pushParser';
 
 const buildExamlePush = () => {
   const line = document.createElement('span');

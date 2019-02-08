@@ -1,7 +1,18 @@
+// @flow
+
 import browser from 'webextension-polyfill';
 
-const findTarget = q => (
-  (typeof (q) === 'string') ? document.getElementById(q) : q
+const getElementById = (id: string) => {
+  const ele = document.getElementById(id);
+  if (ele === null) {
+    throw new Error(`Element whos id=${id} not found.`);
+  }
+
+  return ele;
+};
+
+const findTarget = (q: HTMLElement|string) => (
+  (typeof (q) === 'string') ? getElementById(q) : q
 );
 
 const hideElement = (target) => {
@@ -15,16 +26,17 @@ const hideMessages = () => {
   hideElement('successMsg');
   hideElement('errorMsg');
 };
-const showSuccess = (text) => {
-  const success = document.getElementById('successMsg');
-  success.textContent = text;
-  showElement(success);
+
+const showSuccess = (text: string) => {
+  const successBlock = getElementById('successMsg');
+  successBlock.textContent = text;
+  showElement(successBlock);
 };
 
-const showError = (text) => {
-  const error = document.getElementById('errorMsg');
-  error.textContent = text;
-  showElement(error);
+const showError = (text: string) => {
+  const errorBlock = getElementById('errorMsg');
+  errorBlock.textContent = text;
+  showElement(errorBlock);
 };
 
 const sendMessageToCurrentTab = async (message) => {
@@ -55,8 +67,8 @@ const sendFormToContent = async (form) => {
   return sendMessageToCurrentTab(data);
 };
 
-const form = document.getElementById('mumiForm');
-const muming = document.getElementById('mumi-ing-div');
+const form = getElementById('mumiForm');
+const muming = getElementById('mumi-ing-div');
 
 form.onsubmit = (event) => {
   event.preventDefault();
@@ -89,7 +101,7 @@ form.onsubmit = (event) => {
 function askConfirm(ids) {
   let done = false;
   const [yesButton, noButton, confirmMessage] = ['comfirmYes', 'comfirmNo', 'confirmMessage']
-    .map(id => document.getElementById(id));
+    .map(getElementById);
 
   const idListP = document.createElement('p');
   idListP.textContent = ids.join(', ');

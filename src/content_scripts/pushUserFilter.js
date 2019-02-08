@@ -1,12 +1,28 @@
+// @flow
+
 import _ from 'lodash';
 import { PushType } from './pushParser';
+import type { PushInfo } from './pushParser';
 
-/**
- * @param { Array } pushInfos
- * @param { Object } settings
-* */
-function pushUserFilter(pushInfos, settings) {
-  const filterAmount = (pushs) => {
+type PushInfoList = Array<PushInfo>;
+export type FilterSetting = {
+  sendAmount: ?(string | number),
+  nFloors: ?(string | number),
+  startFloor: ?(string | number),
+
+  push: ?(string | boolean),
+  boo: ?(string | boolean),
+  arrow: ?(string | boolean),
+
+  pttId: ?string,
+  commentContains: ?string,
+  uniqUserId: ?boolean,
+};
+
+function pushUserFilter(
+  pushInfos: PushInfoList, settings: FilterSetting,
+): Array<string> {
+  const filterAmount = (pushs): PushInfoList => {
     const sendAmount = Number(settings.sendAmount);
     if (!sendAmount) { throw new Error('Amount not valid'); }
 
@@ -20,7 +36,7 @@ function pushUserFilter(pushInfos, settings) {
     return pushs.filter((x, i) => i % n === 0);
   };
 
-  const filterPushTypes = (pushs) => {
+  const filterPushTypes = (pushs): PushInfoList => {
     const allowedTypes = {
       [PushType.PUSH]: settings.push,
       [PushType.BOO]: settings.boo,
@@ -30,7 +46,7 @@ function pushUserFilter(pushInfos, settings) {
     return pushs.filter(x => allowedTypes[x.type]);
   };
 
-  const filterUniqIds = (pushs) => {
+  const filterUniqIds = (pushs): PushInfoList => {
     if (settings.uniqUserId) {
       return _.uniqBy(pushs, info => info.id);
     }
@@ -67,7 +83,8 @@ function pushUserFilter(pushInfos, settings) {
   filtered = filterPushTypes(filtered);
   filtered = filterUniqIds(filtered);
   filtered = filterNFloors(filtered);
-  return filterAmount(filtered).map(x => x.id);
+  filtered = filterAmount(filtered);
+  return filtered.map(x => x.id);
 }
 
 export default pushUserFilter;

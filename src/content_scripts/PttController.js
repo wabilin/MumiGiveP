@@ -1,3 +1,5 @@
+// @flow
+
 const PTT_KEYS = Object.freeze({
   Enter: { keyCode: 13 },
   ArrowLeft: { keyCode: 37 },
@@ -9,7 +11,7 @@ const DEFAULT_KB_OPTS = Object.freeze({
   bubbles: true,
 });
 
-const keydownEvent = key => new KeyboardEvent(
+const keydownEvent = (key: string) => new KeyboardEvent(
   'keydown', {
     key,
     ...DEFAULT_KB_OPTS,
@@ -18,23 +20,25 @@ const keydownEvent = key => new KeyboardEvent(
 );
 
 class PttController {
-  constructor(pttInput) {
+  input: HTMLInputElement;
+
+  constructor(pttInput: HTMLInputElement) {
     this.input = pttInput;
   }
 
-  sendText(text) {
+  sendText(text: string) {
     const { input } = this;
 
     input.value = text;
     return input.dispatchEvent(new Event('input'));
   }
 
-  sendKey(key) {
+  sendKey(key: string) {
     const { input } = this;
     return input.dispatchEvent(keydownEvent(key));
   }
 
-  enterList(titleChar) {
+  enterList(titleChar: string) {
     this.sendText(titleChar);
     this.sendKey('ArrowRight');
   }

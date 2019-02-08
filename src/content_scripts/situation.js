@@ -1,3 +1,5 @@
+// @flow
+
 import { matches } from './pttContent';
 
 const HEAD = { row: 0 };

@@ -1,3 +1,4 @@
+// @flow
 import _ from 'lodash';
 
 const PushType = {
@@ -6,24 +7,22 @@ const PushType = {
   BOO: 'BOO',
 };
 
-const matchClassAndHtml = (ele, className, html) => (
+const matchClassAndHtml = (
+  ele: HTMLElement, className: string, html: string,
+) => (
   ele.className === className && ele.innerHTML === html
 );
 
-const isPush = span => matchClassAndHtml(span, 'q15 b0', '推 ');
-const isArrow = span => matchClassAndHtml(span, 'q9 b0', '→ ');
-const isBoo = span => matchClassAndHtml(span, 'q9 b0', '噓 ');
-const typeDetectors = {
-  [PushType.PUSH]: isPush,
-  [PushType.ARROW]: isArrow,
-  [PushType.BOO]: isBoo,
-};
+const isPush = (span: HTMLElement) => matchClassAndHtml(span, 'q15 b0', '推 ');
+const isArrow = (span: HTMLElement) => matchClassAndHtml(span, 'q9 b0', '→ ');
+const isBoo = (span: HTMLElement) => matchClassAndHtml(span, 'q9 b0', '噓 ');
 
-const pushType = (span) => {
-  const matched = Object.entries(typeDetectors)
-    .find(([, isType]) => isType(span));
+const pushType = (span: HTMLElement) => {
+  if (isPush(span)) { return PushType.PUSH; }
+  if (isArrow(span)) { return PushType.ARROW; }
+  if (isBoo(span)) { return PushType.BOO; }
 
-  return matched ? matched[0] : null;
+  return null;
 };
 
 const pushLineFormat = (line) => {
@@ -48,7 +47,13 @@ const matchIdRule = (id) => {
   return re.test(id);
 };
 
-const parsePushData = (line) => {
+
+export type PushInfo = {
+  type: string,
+  id: string,
+  raw: string,
+};
+const parsePushData = (line: HTMLElement): PushInfo | null => {
   if (!pushLineFormat(line)) { return null; }
   const headSpan = line.children[0];
 
@@ -64,7 +69,7 @@ const parsePushData = (line) => {
   };
 };
 
-const filterLinesUnderArticle = (lines) => {
+const filterLinesUnderArticle = (lines: Array<HTMLElement>) => {
   const articleEndIndex = lines.findIndex(line => (
     line.innerHTML.includes('<span class="q2 b0">※ 文章網址: </span>')
   ));
@@ -76,7 +81,7 @@ const filterLinesUnderArticle = (lines) => {
   return lines.slice(articleEndIndex);
 };
 
-const getPushInfos = (rawLines) => {
+const getPushInfos = (rawLines: Array<HTMLElement>): Array<PushInfo> => {
   const linesUnderArticle = filterLinesUnderArticle(rawLines);
   const pushInfos = linesUnderArticle.map(parsePushData).filter(x => x);
   const uniqPushInfos = _.uniqBy(pushInfos,

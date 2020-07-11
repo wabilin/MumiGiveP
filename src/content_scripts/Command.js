@@ -70,7 +70,13 @@ class Command {
     }
 
     await this.inArticleGotoPageBeginning();
-    await this.inArticleGotoArticleEnding();
+
+    try {
+      await this.inArticleGotoArticleEnding();
+    } catch (err) {
+      const message = '無法取得推文開始位置（以 ※ 文章網址 開頭之行）。';
+      throw (new Error(message));
+    }
 
     const collectedLines = await this.inArticleCollectPushLines();
 

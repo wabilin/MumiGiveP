@@ -1,6 +1,6 @@
 // @flow
 
-import _ from 'lodash';
+import uniqBy from 'lodash/uniqBy';
 import { PushType } from './pushParser';
 import type { PushInfo } from './pushParser';
 
@@ -43,12 +43,12 @@ function pushUserFilter(
       [PushType.ARROW]: settings.arrow,
     };
 
-    return pushs.filter(x => allowedTypes[x.type]);
+    return pushs.filter((x) => allowedTypes[x.type]);
   };
 
   const filterUniqIds = (pushs): PushInfoList => {
     if (settings.uniqUserId) {
-      return _.uniqBy(pushs, info => info.id);
+      return uniqBy(pushs, (info) => info.id);
     }
     return pushs;
   };
@@ -66,14 +66,14 @@ function pushUserFilter(
     const { pttId } = settings;
     if (!pttId) { return pushs; }
 
-    return pushs.filter(x => x.id !== pttId);
+    return pushs.filter((x) => x.id !== pttId);
   };
 
   const filterCommentContains = (pushs) => {
     const { commentContains } = settings;
     if (!commentContains) { return pushs; }
 
-    return pushs.filter(x => x.raw.includes(commentContains));
+    return pushs.filter((x) => x.raw.includes(commentContains));
   };
 
   let filtered = pushInfos;
@@ -84,7 +84,7 @@ function pushUserFilter(
   filtered = filterUniqIds(filtered);
   filtered = filterNFloors(filtered);
   filtered = filterAmount(filtered);
-  return filtered.map(x => x.id);
+  return filtered.map((x) => x.id);
 }
 
 export default pushUserFilter;

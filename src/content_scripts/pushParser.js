@@ -1,5 +1,5 @@
 // @flow
-import _ from 'lodash';
+import uniqBy from 'lodash/uniqBy';
 
 const PushType = {
   PUSH: 'PUSH',
@@ -47,7 +47,6 @@ const matchIdRule = (id) => {
   return re.test(id);
 };
 
-
 export type PushInfo = {
   type: string,
   id: string,
@@ -70,7 +69,7 @@ const parsePushData = (line: HTMLElement): PushInfo | null => {
 };
 
 const filterLinesUnderArticle = (lines: Array<HTMLElement>) => {
-  const articleEndIndex = lines.findIndex(line => (
+  const articleEndIndex = lines.findIndex((line) => (
     line.innerHTML.includes('<span class="q2 b0">※ 文章網址: </span>')
   ));
 
@@ -83,9 +82,9 @@ const filterLinesUnderArticle = (lines: Array<HTMLElement>) => {
 
 const getPushInfos = (rawLines: Array<HTMLElement>): Array<PushInfo> => {
   const linesUnderArticle = filterLinesUnderArticle(rawLines);
-  const pushInfos = linesUnderArticle.map(parsePushData).filter(x => x);
-  const uniqPushInfos = _.uniqBy(pushInfos,
-    info => info.raw.replace(/\s/g, ''));
+  const pushInfos = linesUnderArticle.map(parsePushData).filter((x) => x);
+  const uniqPushInfos = uniqBy(pushInfos,
+    (info) => info.raw.replace(/\s/g, ''));
   return uniqPushInfos;
 };
 

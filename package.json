@@ -37,6 +37,6 @@
   },
   "dependencies": {
     "lodash": "^4.17.21",
-    "webextension-polyfill": "^0.7.0"
+    "webextension-polyfill": "^0.8.0"
   }
 }
